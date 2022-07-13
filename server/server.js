@@ -7,7 +7,6 @@ const Match = require("./models/match");
 const app = express();
 
 const clientPath = `${__dirname}/../client`;
-console.log(`Serving static from: ${clientPath}`);
 
 app.use(express.static(clientPath));
 
@@ -38,6 +37,4 @@ server.on("error", (err) => {
   console.error("Server error: ", err);
 });
 
-server.listen(process.env.PORT || 8000, () => {
-  console.log("RPS started on 8000");
-});
+server.listen(process.env.PORT || 8000, () => {});

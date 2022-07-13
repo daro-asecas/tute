@@ -70,12 +70,22 @@ class Match {
 
 
     this.turns = [false, false]
-    console.log("this.turns")
-    console.log(this.turns)
     this._winnerCollects(winner[0], winner[1])
-    this._clean()
+    this._clean()  
+  }
 
+  async _putOne() {
+
+    let promise = new Promise((resolve, reject) => {
+      setTimeout(() => resolve("done!"), 3000)
+    });
   
+    let result = await promise;
+
+
+    this.turns = [false, false]
+    this._winnerCollects(winner[0], winner[1])
+    this._clean()  
   }
   
 
@@ -89,10 +99,7 @@ class Match {
 
   _onTurn(player, index) {
 //    inRound = true
-console.log("entra en onturn")
-console.log(this.turns)
 if (!this.turns[index]) {
-      console.log("entra en el if")
       const card = decks[index].pop();
       cards[index]=card
       let remaining = decks[index].numberOfCards
@@ -125,6 +132,7 @@ if (!this.turns[index]) {
 
         } else {                  // hacer el caso de guerra!!
           this._sendToBothPlayers(["War!", "War!"])
+          this._putOne()
         }
 
 
@@ -135,7 +143,6 @@ if (!this.turns[index]) {
   };
 
   _clean() {
-    console.log("ejecuta clean")
     this._players[0].emit("clean", [decks[0].numberOfCards, decks[1].numberOfCards]);
     this._players[1].emit("clean", [decks[1].numberOfCards, decks[0].numberOfCards]);
   };
