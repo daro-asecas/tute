@@ -27,9 +27,9 @@ rules.roundWinner = ( ([c0, c1]) => {
 });
 
 rules.isGameOver = (decks) => {
-  if (decks[0].numberOfCards = 0) {
+  if (decks[0].numberOfCards === 0) {
     return 1
-  } else if (decks[0].numberOfCards = 0) {
+  } else if (decks[1].numberOfCards === 0) {
     return 0
   } else {
     return false

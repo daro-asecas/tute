@@ -7,7 +7,6 @@ let cards = [0, 0]
 let messages = [0, 0]
 let winner, stop
 
-
 class Match {
   constructor(p0, p1) {
     this._players = [p0, p1];
@@ -45,26 +44,20 @@ class Match {
     decks[0] = new Deck (deck.cards.slice(0, startingHand))
     decks[1] = new Deck (deck.cards.slice(startingHand, deck.numberOfCards))
     
-    // decks[1] = new Deck(deck.cards.slice(0, startingHand))    // esta es para forzar la guerra
-    // decks[1].pop()                                           //  este fuerza el game over
-    // decks[1].pop()                                          //   este fuerza el game over
-    // decks[1].pop()                                         //    este fuerza el game over
-    ////////////////////////////////////////////////////////
+    // decks[1] = decks[0]                                // esta es para forzar la guerra
+    // decks[1].cards = [ { suit: '♠', value: '2' }]     //  este fuerza el game over
 
     piles[0] = new Deck([])
     piles[1] = new Deck([])
     stop = false;
 
     this._players[0].emit("deal")  // io.emit("deal")  // esta no me funciono
-    this._players[1].emit("deal") //
+    this._players[1].emit("deal") //  (incluso requiriendo io al inicio)
     this._clean()
-
   }
 
-
   async _nextRound() {
-
-    let promise = new Promise((resolve, reject) => {
+   let promise = new Promise((resolve, reject) => {
       setTimeout(() => resolve("done!"), 2000)
     });
     let result = await promise;
@@ -72,7 +65,6 @@ class Match {
     this.turns = [false, false]
     this._winnerCollects(winner[0], winner[1])
     this._clean()
-
     this._isGameOver(decks)
   }
 
@@ -107,7 +99,7 @@ class Match {
   }
 
   _onTurn(player, index) {
-    if (stop) return
+    if (stop) {return}
     if (!this.turns[index]) {
       this.turns[index] = true;
       cards[index] = decks[index].pop();
@@ -123,13 +115,11 @@ class Match {
   }
   
   _round() {
-        winner = rules.roundWinner(cards);   // esto regresa [winner, loser] (los indices de cada jugador)
-        
+        winner = rules.roundWinner(cards);
         if (typeof(winner[0])=="number") {
 
-          // messages.forEach( (msg, index) => {                     // esta me gusta mas pero falla
-          //   msg = (index===winner[0]) ? "You won!" : "You loose"
-          // }) 
+          // messages.forEach( (msg, index) => {msg = (index===winner[0]) ? "You won!" : "You loose"})
+          // esta me gusta mas pero falla   
 
           if (!!winner[0]) { messages = ["You loose", "You won!"]
           } else { messages = ["You won!", "You loose"]}
@@ -148,7 +138,6 @@ class Match {
         } 
       }
 
-    
     _clean() {
       this._players[0].emit("clean", [decks[0].numberOfCards, decks[1].numberOfCards]);
       this._players[1].emit("clean", [decks[1].numberOfCards, decks[0].numberOfCards]);
@@ -156,7 +145,7 @@ class Match {
     
     _isGameOver(decks) {
       winner = rules.isGameOver(decks);
-      if (winner===false) return
+      if (winner===false) {return}
       stop = true
       this._sendToBothPlayers(["GAME OVER"])
     }
