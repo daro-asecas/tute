@@ -1,0 +1,31 @@
+@import "./shared/chat.css";
+@import "./shared/game.css";
+
+body {
+  font-family: "Helvetica Neue", sans-serif;
+  padding: 3rem auto;
+  display: grid;
+  grid-template: 
+  "match game" 2rem
+  "chat game" 18rem / 300px auto;
+  background-color: darkslategray;
+}
+
+#match-details {
+  grid-area: match;
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: 1px solid lightgrey;
+  background-color: whitesmoke;
+  display: flex;
+  align-items: center;
+  padding: 0.5rem;
+}
+
+#game-wrapper {
+  grid-area: game;
+}
+
+#chat-wrapper {
+  grid-area: chat;
+}
