@@ -69,6 +69,7 @@ button:hover {
 
 #messages li.server {
   align-self: center;
+  text-align: center;
   color: #020202;
   font-size: 0.9rem;
   font-style: italic;

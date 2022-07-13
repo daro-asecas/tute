@@ -4,7 +4,7 @@ const writeEvent = ([text, emisor]) => {
 
   const el = document.createElement("li");   // <li> element
   el.classList.add(emisor);
-  el.innerHTML = text;
+  el.innerText = text;
   
   parent.appendChild(el);
 
@@ -22,8 +22,6 @@ const onFormSubmitted = (e) => {
   };
 };
 
-
-writeEvent(["Welcome to RPS", "server"]);
 
 // const sock = io(); // lo dejo comentado porque esta definida en match
 sock.on("message", writeEvent)

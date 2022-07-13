@@ -14,7 +14,7 @@ let oponentDeckElement = document.querySelector(".oponent-deck");
 let text = document.querySelector(".game-message");
 
 const colorOf = (card => {
-    return ( this.suit==="♠" || this.suit=== "♣" ) ? "black" : "red"
+    return ( card.suit==="♠" || card.suit=== "♣" ) ? "black" : "red"
   })
 
   const getHTMLOf = (card => {
@@ -29,41 +29,57 @@ const gameMessage = (msg) => {
   text.innerText = msg}
 sock.on("gameMessage", gameMessage)
 
+const renderDeck = ((deck, remainingCards) => {
+  deck.innerText = remainingCards
+  if (!remainingCards) {
+    deck.classList.add("empty-deck")
+  } else {
+    deck.classList.remove("empty-deck")
+  }
+})
+
+
+
 const flip = ([card, player, remainingCards]) => {
-  if (player == "me") {
+  if (player === "me") {
+    renderDeck(playerDeckElement, remainingCards)
     playerCardSlot.innerHTML = ""
-    playerDeckElement.innerText = remainingCards
     playerCardSlot.appendChild(getHTMLOf(card))
   } else {
+    renderDeck(oponentDeckElement, remainingCards)
     oponentCardSlot.innerHTML = ""
-    oponentDeckElement.innerText = remainingCards
     oponentCardSlot.appendChild(getHTMLOf(card))
   }
 }
 sock.on("flip", flip)
 
-const put = ([card, player]) => {
-  if (player="me") {
-    playerDeckElement.innerText = playerDeck.numberOfCards
-    playerCardSlot.innerHTML = `<div class="deck">${oponentPile.numberOfCards}</div>`    
+const put = ([player, remainingCards, pile]) => {
+  if (player === "me") {
+    renderDeck(playerDeckElement, remainingCards)
+    playerCardSlot.innerHTML = `<div class="deck">${pile}</div>`    
   } else {
-    oponentDeckElement.innerText = oponentDeck.numberOfCards
-    oponentCardSlot.innerHTML = `<div class="deck">${playerPile.numberOfCards}</div>` 
+    renderDeck(oponentDeckElement, remainingCards)
+    oponentCardSlot.innerHTML = `<div class="deck">${pile}</div>` 
   }
 }
 sock.on("put", put)
 
-function cleanBeforeRound([playerNumberOfCards, oponentNumberOfCards]) {
-  console.log("clen")
+function cleanBeforeRound([playerRemainingCards, oponentRemainingCards]) {
+  text.innerText = ""
+
   playerCardSlot.innerHTML = ""
-  playerDeckElement.innerText = playerNumberOfCards
+  renderDeck(playerDeckElement, playerRemainingCards)
   
   oponentCardSlot.innerHTML = ""
-  oponentDeckElement.innerText = oponentNumberOfCards
-  
-  text.innerText = ""
+  renderDeck(oponentDeckElement, oponentRemainingCards)  
 }
 sock.on("clean", cleanBeforeRound)
+
+function deal() {
+  playerDeckElement.classList.add("deck")
+  oponentDeckElement.classList.add("deck")
+}
+sock.on("deal", deal)
 
 
 
