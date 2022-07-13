@@ -1,12 +1,11 @@
 const Deck = require("./deck.js")
 const rules = require("./rules.js")
 
-
 let decks = [0, 0]
 let piles = [0, 0]
 let cards = [0, 0]
 let messages = [0, 0]
-let winner, warPile, inWar, stop
+let winner, stop
 
 
 class Match {
@@ -35,7 +34,7 @@ class Match {
   
   _sendToBothPlayers(messages) {
     this._players.forEach((player, index) => {
-      player.emit("gameMessage", messages[index])
+      player.emit("gameMessage", messages[index] || messages)
     });
   };
 
@@ -45,16 +44,19 @@ class Match {
     const startingHand = Math.floor(deck.numberOfCards / 2)
     decks[0] = new Deck (deck.cards.slice(0, startingHand))
     decks[1] = new Deck (deck.cards.slice(startingHand, deck.numberOfCards))
-    // esta es para forzar la guerra  //////
-    // p1Deck = new Deck(deck.cards.slice(0, startingHand))
-    //////////////////////////////////////////
-  
+    
+    // decks[1] = new Deck(deck.cards.slice(0, startingHand))    // esta es para forzar la guerra
+    // decks[1].pop()                                           //  este fuerza el game over
+    // decks[1].pop()                                          //   este fuerza el game over
+    // decks[1].pop()                                         //    este fuerza el game over
+    ////////////////////////////////////////////////////////
+
     piles[0] = new Deck([])
     piles[1] = new Deck([])
-    let warPile = new Deck([])
-    inWar = false;
     stop = false;
 
+    this._players[0].emit("deal")  // io.emit("deal")  // esta no me funciono
+    this._players[1].emit("deal") //
     this._clean()
 
   }
@@ -63,32 +65,39 @@ class Match {
   async _nextRound() {
 
     let promise = new Promise((resolve, reject) => {
-      setTimeout(() => resolve("done!"), 3000)
+      setTimeout(() => resolve("done!"), 2000)
     });
-  
     let result = await promise;
-
 
     this.turns = [false, false]
     this._winnerCollects(winner[0], winner[1])
-    this._clean()  
+    this._clean()
+
+    this._isGameOver(decks)
   }
 
   async _putOne() {
 
     let promise = new Promise((resolve, reject) => {
-      setTimeout(() => resolve("done!"), 3000)
+      setTimeout(() => resolve("done!"), 2000)
     });
-  
     let result = await promise;
 
-
     this.turns = [false, false]
-    this._winnerCollects(winner[0], winner[1])
-    this._clean()  
-  }
-  
 
+    if (decks[0].numberOfCards > 1 && decks[1].numberOfCards > 1) {
+      this._sendToBothPlayers(["Put one"])
+      this._players.forEach((player, index) => {
+        piles[index].push(decks[index].pop())
+        let remaining = decks[index].numberOfCards
+        let pile = piles[index].numberOfCards
+        player.emit("put", ["me", remaining, pile])
+        player.broadcast.emit("put", ["opponent", remaining, pile])
+      })
+    } else {
+      this._sendToBothPlayers(["Last card, good luck!"])
+    }
+  }
 
   _winnerCollects(winner, loser) {
     decks[winner].join(piles[winner])
@@ -98,155 +107,61 @@ class Match {
   }
 
   _onTurn(player, index) {
-//    inRound = true
-if (!this.turns[index]) {
-      const card = decks[index].pop();
-      cards[index]=card
-      let remaining = decks[index].numberOfCards
-      player.emit("flip", [card, "me", remaining])
-      player.broadcast.emit("flip", [card, "opponent", remaining])
+    if (stop) return
+    if (!this.turns[index]) {
       this.turns[index] = true;
+      cards[index] = decks[index].pop();
+      piles[index].push(cards[index]);
+      let remaining = decks[index].numberOfCards
+      player.emit("flip", [cards[index], "me", remaining])
+      player.broadcast.emit("flip", [cards[index], "opponent", remaining])
       
-      if (this.turns[0] && this.turns[1]) { // (this.turns == [ true, true ]) { // no se por que esta no funciono
-
-        piles[0].push(cards[0])
-        piles[1].push(cards[1])
-
+      if (this.turns[0] && this.turns[1]) {
+        this._round()
+      }
+    }
+  }
+  
+  _round() {
         winner = rules.roundWinner(cards);   // esto regresa [winner, loser] (los indices de cada jugador)
-        inWar = false;
         
         if (typeof(winner[0])=="number") {
 
-          // messages.forEach( (msg, index) => {                     // esta me gusta mas pero
-          //   msg = (index===winner[0]) ? "You won!" : "You loose"  // falla por el mismo motivo 
-          // })                                                      // que no secual es
+          // messages.forEach( (msg, index) => {                     // esta me gusta mas pero falla
+          //   msg = (index===winner[0]) ? "You won!" : "You loose"
+          // }) 
 
-          if (!!winner[0]) {
-            messages = ["You loose", "You won!"]
-          } else {
-            messages = ["You won!", "You loose"]
-          }
+          if (!!winner[0]) { messages = ["You loose", "You won!"]
+          } else { messages = ["You won!", "You loose"]}
           this._sendToBothPlayers(messages)
-
+          
           this._nextRound()
 
-        } else {                  // hacer el caso de guerra!!
-          this._sendToBothPlayers(["War!", "War!"])
-          this._putOne()
-        }
-
-
-        
+        } else {
+          if (decks[0].numberOfCards===0 || decks[1].numberOfCards===0) {
+            stop = true
+            this._sendToBothPlayers(["GAME OVER"])  // hardcodeado el caso del empate con  la ultima carta
+          } else {
+            this._sendToBothPlayers(["War!"])
+            this._putOne()
+          }
+        } 
       }
+
+    
+    _clean() {
+      this._players[0].emit("clean", [decks[0].numberOfCards, decks[1].numberOfCards]);
+      this._players[1].emit("clean", [decks[1].numberOfCards, decks[0].numberOfCards]);
+    };
+    
+    _isGameOver(decks) {
+      winner = rules.isGameOver(decks);
+      if (winner===false) return
+      stop = true
+      this._sendToBothPlayers(["GAME OVER"])
     }
-      
-  };
-
-  _clean() {
-    this._players[0].emit("clean", [decks[0].numberOfCards, decks[1].numberOfCards]);
-    this._players[1].emit("clean", [decks[1].numberOfCards, decks[0].numberOfCards]);
-  };
-
-
-
-
 };
 
-
-
-
-// document.addEventListener("click", () => {
-//   if (stop) {
-//     startGame()
-//     return
-//   }
-
-//   if (inWar) {
-//     putOne()
-//   } else if (inRound) {
-//     cleanBeforeRound()
-//   } else {
-//     flipCards()
-//   }
-// })
-
-// cleanBeforeRound()
-// function cleanBeforeRound() {
-//   inRound = false
-//   p1CardSlot.innerHTML = ""
-//   p0CardSlot.innerHTML = ""
-//   text.innerText = ""
-
-//   updateDeckCount()
-// }
-
-// function updateDeckCount() {
-//   p0DeckElement.innerText = p0Deck.numberOfCards
-//   p1DeckElement.innerText = p1Deck.numberOfCards
-// }
-
-// function flipCards() {
-//   inRound = true
-//   const p0Card = p0Deck.pop()
-//   const p1Card = p1Deck.pop()
-//   p0CardSlot.innerHTML=""
-//   p1CardSlot.innerHTML=""
-//   p0CardSlot.appendChild(p0Card.getHTML())
-//   p1CardSlot.appendChild(p1Card.getHTML())
-//   p0Pile.push(p0Card)
-//   p1Pile.push(p1Card)
-
-//   updateDeckCount()
-
-//   if(isRoundWinner(p0Card, p1Card)) {
-//     text.innerText = "Win"
-//     p0Deck.join(p0Pile)
-//     p0Deck.join(p1Pile)
-//     p0Pile = new Deck([])
-//     p1Pile = new Deck([])
-//     inWar = false
-//   } else if (isRoundWinner(p1Card, p0Card)) {
-//     text.innerText = "Loose"
-//     p1Deck.join(p0Pile)
-//     p1Deck.join(p1Pile)
-//     p0Pile = new Deck([])
-//     p1Pile = new Deck([])
-//     inWar = false
-//   } else {
-//     text.innerText = "War!"
-//     inWar = true
-//   }
-
-//   if (isGameOver(p0Deck)) {
-//     text.innerText = "You Lose!!"
-//     stop = true
-//   } else if (isGameOver(p1Deck)) {
-//     text.innerText = "You Win!!"
-//     stop = true
-//   }
-// }
-
-// function putOne() {
-//   const p0Card = p0Deck.pop()
-//   const p1Card = p1Deck.pop()
-//   p0Pile.push(p0Card)
-//   p1Pile.push(p1Card)
-//   p0DeckElement.innerText = p0Deck.numberOfCards
-//   p1DeckElement.innerText = p1Deck.numberOfCards
-//   p1CardSlot.innerHTML = `<div class="deck">${p0Pile.numberOfCards}</div>`
-//   p0CardSlot.innerHTML = `<div class="deck">${p1Pile.numberOfCards}</div>`
-//   text.innerText = "Put one in the pile"
-//   inWar = false
-//   inRound = false
-// }
-
-// function isRoundWinner(cardOne, cardTwo) {
-//   return CARD_VALUE_MAP[cardOne.value] > CARD_VALUE_MAP[cardTwo.value]
-// }
-
-// function isGameOver(deck) {
-//   return deck.numberOfCards === 0;
-// }
 
 
 module.exports = Match;

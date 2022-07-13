@@ -23,6 +23,7 @@ io.on("connection", (sock) => {
     new Match(waitingPlayer, sock);
     waitingPlayer = null;
   } else {
+    sock.emit("message", ["To try the app open it in two tabs", "server"])
     waitingPlayer = sock;
   }
   
