@@ -1,5 +1,1 @@
 server/node_modules
-
-client/src/match.js 
-# lo dejo ignorado porque  en el repo local tengo la url de localhost
-# en github tengo la url para deployar en netlify y heroku

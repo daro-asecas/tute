@@ -1,5 +1,3 @@
-const sock = io("https://tute-online.herokuapp.com/"); // cambiar por ("http://localhost:8000")
-                                                      // https://tute-online.herokuapp.com/
 const addClickListener = () => {
   const area = document.getElementById("game-wrapper");
   area.addEventListener("click", () => {
