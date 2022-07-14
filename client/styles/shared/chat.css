@@ -77,14 +77,18 @@ button:hover {
 }
 
 
-#chat-wrapper form input {
+#chat-form {
+  display: flex;
+}
+
+  #chat-form input {
   font-size: 1.0rem;
   margin: 0;
   padding: 0;
   flex-grow: 1;
 }
 
-#chat-wrapper form button {
+#chat-form button {
   padding: 0;
   width: 50px;
 }
