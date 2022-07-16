@@ -1,7 +1,7 @@
 const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
-const cors = require("cors");
+// const cors = require("cors"); creo que no usa esta librería
 
 const Match = require("./models/match");
 
