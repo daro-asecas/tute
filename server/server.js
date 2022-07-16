@@ -12,7 +12,7 @@ const clientPath = `${__dirname}/../client`;
 app.use(express.static(clientPath));
 
 app.use(cors({
-  origin: ["https://tute-online.netlify.app/", "localhost:8000"],
+  origin: ["https://tute-online.netlify.app", "localhost:8000"],
 }))
 
 const server = http.createServer(app);
