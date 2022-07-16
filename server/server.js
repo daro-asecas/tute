@@ -13,9 +13,11 @@ app.use(express.static(clientPath));
 
 const server = http.createServer(app);
 
-const io = socketio(server, cors({
-  origin: ["https://tute-online.netlify.app", "localhost:8000"],
-}));
+const io = socketio(server, {
+  cors: {
+    origin: "*",  // [https://tute-online.netlify.app", "localhost:8000"],
+  }
+});
 
 let waitingPlayer = null;
 
