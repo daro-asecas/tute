@@ -4,9 +4,6 @@
 
 #game-wrapper {
   background-color: green;
-  width: 400px;
-  height: 20rem;
-  margin: 0;
   padding: 1.3rem;
   display: grid;
   grid-template-columns: repeat(2, 4rem);
@@ -14,7 +11,16 @@
   gap: .5rem;
   justify-content: center;
   user-select: none;
-  border:1px solid black;
+}
+
+#match-details {
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: 1px solid lightgrey;
+  background-color: whitesmoke;
+  display: flex;
+  align-items: center;
+  padding: 0.2rem;
 }
 
 .deck{

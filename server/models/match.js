@@ -8,10 +8,11 @@ let messages = [0, 0]
 let winner, stop
 
 class Match {
-  constructor(p0, p1) {
+  constructor(room, p0, p1) {
     this._players = [p0, p1];
     this.turns = [false, false];
-    
+    this._room = room
+
     this._players.forEach((player, index) => {
       player.on("turn", () => {
         this._onTurn(player,index)
@@ -84,7 +85,7 @@ class Match {
         let remaining = decks[index].numberOfCards
         let pile = piles[index].numberOfCards
         player.emit("put", ["me", remaining, pile])
-        player.broadcast.emit("put", ["opponent", remaining, pile])
+        player.to(this._room).emit("put", ["opponent", remaining, pile])
       })
     } else {
       this._sendToBothPlayers(["Last card, good luck!"])
@@ -106,7 +107,7 @@ class Match {
       piles[index].push(cards[index]);
       let remaining = decks[index].numberOfCards
       player.emit("flip", [cards[index], "me", remaining])
-      player.broadcast.emit("flip", [cards[index], "opponent", remaining])
+      player.to(this._room).emit("flip", [cards[index], "opponent", remaining])
       
       if (this.turns[0] && this.turns[1]) {
         this._round()

@@ -18,7 +18,7 @@ const onFormSubmitted = (e) => {
     const text = input.value;
     input.value = "";
     
-    sock.emit("message", text);
+    sock.emit("message", text, room);
   };
 };
 
@@ -29,3 +29,5 @@ sock.on("message", writeEvent)
 document
   .querySelector("#chat-form")
   .addEventListener("submit", onFormSubmitted);
+
+const room = window.location.href.substring(window.location.href.length-5)

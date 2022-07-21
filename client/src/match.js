@@ -80,5 +80,14 @@ function deal() {
 sock.on("deal", deal)
 
 
+document.addEventListener('DOMContentLoaded', (event) => {
+  const match = new URLSearchParams(window.location.search).get('match');
+  sock.emit("joinGame", match)
+})
+
+function fullRoom () {
+  window.location.replace(`../index.html`);
+}
+sock.on("fullRoom", fullRoom)
 
 addClickListener();
