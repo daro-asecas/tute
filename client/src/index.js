@@ -3,26 +3,24 @@ const joinBtn = document.querySelector("#join-btn");
 const input =  document.querySelector("#game-code");
 const errorDiv =  document.querySelector("#error");
 
-createBtn.addEventListener("click", () => {
-  sock.emit("createRoom");
-});
-
-joinBtn.addEventListener("click", (e) => {
-  e.preventDefault();
-  if (input.value) {
-    sock.emit("joinRoom", input.value);
-  };
-});
-
-input.addEventListener("keydown", () => {
-    errorDiv.innerText = "";
-});
-
 const createGame = () => {
   createBtn.addEventListener("click", () => {
     sock.emit("createRoom");
   })
 };
+
+const joinGame = () => {
+  joinBtn.addEventListener("click", (e) => {
+    e.preventDefault()
+    if (input.value) {
+      sock.emit("joinRoom", input.value);
+    };
+  })
+};
+
+input.addEventListener("keydown", () => {
+    errorDiv.innerText = "";
+});
 
 function redirect(roomName) {
   window.location.replace(`../html/${roomName}`);
@@ -48,3 +46,7 @@ function error (error) {
   }
 }
 sock.on("error", error)
+
+
+createGame();
+joinGame(); 
