@@ -35,10 +35,17 @@ input {
   border-radius: 2px;
 }
 
-input::after {
-  position: absolute;
-  content: "Game already started";
+#error {
+  color:brown;
+  font-weight: 900;
+  margin-top: -1rem;
+  padding-left: 0.4rem;
+  height:0;
+}
 
+/* input::after {
+  position: absolute;
+  content: "";
   bottom: .5rem;
   right: .5rem;
-}
+} */

@@ -5,29 +5,38 @@ const addClickListener = () => {
   })
 };
 
-let playerCardSlot = document.querySelector(".player-card-slot");
-let oponentCardSlot = document.querySelector(".oponent-card-slot");
-let playerDeckElement = document.querySelector(".player-deck");
-let oponentDeckElement = document.querySelector(".oponent-deck");
-let text = document.querySelector(".game-message");
+// const addInviteListener = () => {
+//   inviteBtn.addEventListener("click", () => {
+//     inviteBtn.href = `https://api.whatsapp.com/whatsapp://send?text=${window.location.href}`
+// asi deberia ser el <a>    href="" data-action="share/whatsapp/share"
+//     })
+//   };
+  
+  const playerCardSlot = document.querySelector(".player-card-slot");
+  const oponentCardSlot = document.querySelector(".oponent-card-slot");
+  const playerDeckElement = document.querySelector(".player-deck");
+  const oponentDeckElement = document.querySelector(".oponent-deck");
+  const text = document.querySelector(".game-message");
+  const inviteBtn = document.querySelector("#invite-btn");
 
 const colorOf = (card => {
     return ( card.suit==="♠" || card.suit=== "♣" ) ? "black" : "red"
   })
 
-  const getHTMLOf = (card => {
-    const cardDiv = document.createElement("div")
-    cardDiv.innerText = card.suit
-    cardDiv.classList.add("card", colorOf(card))
-    cardDiv.dataset.value=`${card.value}${card.suit}`
-    return cardDiv
-  })
+const getHTMLOf = (card => {
+  const cardDiv = document.createElement("div")
+  cardDiv.innerText = card.suit
+  cardDiv.classList.add("card", colorOf(card))
+  cardDiv.dataset.value=`${card.value}${card.suit}`
+  return cardDiv
+})
+
 
 const gameMessage = (msg) => {
   text.innerText = msg}
-sock.on("gameMessage", gameMessage)
-
-const renderDeck = ((deck, remainingCards) => {
+  sock.on("gameMessage", gameMessage)
+  
+  const renderDeck = ((deck, remainingCards) => {
   deck.innerText = remainingCards
   if (!remainingCards) {
     deck.classList.add("empty-deck")
@@ -85,9 +94,19 @@ document.addEventListener('DOMContentLoaded', (event) => {
   sock.emit("joinGame", match)
 })
 
-function fullRoom () {
-  window.location.replace(`../index.html`);
+function matchStart () {
+  addClickListener();
 }
-sock.on("fullRoom", fullRoom)
+sock.on("matchStart", matchStart)
 
-addClickListener();
+
+function error (error) {
+  if (error==="fullRoom") {
+    window.location.replace(`../index.html`);
+  } else {
+    sock.emit("serverConsoleLog", "Error parameter unknown")
+  }
+}
+sock.on("error", error)
+
+inviteBtn.href = `https://api.whatsapp.com/send?text=${window.location.href}`

@@ -15,9 +15,8 @@
   display:flex;
   flex-direction: column;
   gap: 0.1rem;
-  border-bottom: 1px solid lightgrey;
   overflow-y: scroll;
-  word-break: break-all;
+  word-break: break-word;
 }
 
 #messages li {
@@ -67,4 +66,14 @@
 #chat-form button {
   padding: 0;
   width: 50px;
+}
+
+#pannel-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: 1px solid lightgrey;
+  background-color: whitesmoke;
+  display: flex;
+  align-items: center;
+  padding: 0.2rem;
 }

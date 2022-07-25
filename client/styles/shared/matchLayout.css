@@ -12,6 +12,7 @@
   margin: 0;
   /* min-width: 400px; */
   min-height: 10rem;
+  max-height: 20rem;
   flex-grow: 1;
 }
 

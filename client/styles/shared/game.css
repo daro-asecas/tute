@@ -13,16 +13,6 @@
   user-select: none;
 }
 
-#match-details {
-  font-size: 1.2rem;
-  font-weight: bold;
-  border: 1px solid lightgrey;
-  background-color: whitesmoke;
-  display: flex;
-  align-items: center;
-  padding: 0.2rem;
-}
-
 .deck{
   height: 100%;
   width: 100%;
@@ -122,4 +112,9 @@
   bottom: .5rem;
   right: .5rem;
   transform: rotate(180deg)
+}
+
+#invite-btn {
+  font-size:2rem;
+  padding: 7px;
 }

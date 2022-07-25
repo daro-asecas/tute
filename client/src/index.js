@@ -1,34 +1,50 @@
 const createBtn = document.querySelector("#create-btn");
 const joinBtn = document.querySelector("#join-btn");
 const input =  document.querySelector("#game-code");
-const form =  document.querySelector("#join-form");
+const errorDiv =  document.querySelector("#error");
+
+createBtn.addEventListener("click", () => {
+  sock.emit("createRoom");
+});
+
+joinBtn.addEventListener("click", (e) => {
+  e.preventDefault();
+  if (input.value) {
+    sock.emit("joinRoom", input.value);
+  };
+});
+
+input.addEventListener("keydown", () => {
+    errorDiv.innerText = "";
+});
 
 const createGame = () => {
   createBtn.addEventListener("click", () => {
-    sock.emit("joinRoom","");
-  })
-};
-
-const joinGame = () => {
-  joinBtn.addEventListener("click", (e) => {
-    e.preventDefault()
-    if (input.value) {
-      sock.emit("joinRoom", input.value);
-    };
+    sock.emit("createRoom");
   })
 };
 
 function redirect(roomName) {
-  window.location.replace(`../html/match.html?match=${roomName}`);
+  window.location.replace(`../html/${roomName}`);
 }
 sock.on("redirect", redirect)
 
-function fullRoom() {
-  let full = document.createElement("div")
-  full.innerText("Game already started")
-  form.appendChild("full")
+function showError (msg) {
+  errorDiv.innerText = msg
 }
-sock.on("fullRoom", fullRoom)
 
-createGame();
-joinGame();
+function error (error) {
+  console.log(error)
+  sock.emit("serverConsoleLog", error)
+  switch (error) {
+    case "fullRoom":
+      showError("Game already started")
+      break
+      case "unexistingRoom":
+        showError("Incorrect game ID")   
+        break
+        default:
+        sock.emit("serverConsoleLog", "Error parameter unknown")
+  }
+}
+sock.on("error", error)

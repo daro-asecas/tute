@@ -1,4 +1,5 @@
 const Deck = require("./deck.js")
+const { isGameOver } = require("./rules.js")
 const rules = require("./rules.js")
 
 let decks = [0, 0]
@@ -54,6 +55,7 @@ class Match {
 
     this._players[0].emit("deal")  // io.emit("deal")  // esta no me funciono
     this._players[1].emit("deal") //  (incluso requiriendo io al inicio)
+    
     this._clean()
   }
 
