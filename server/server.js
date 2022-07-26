@@ -1,7 +1,7 @@
 const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
-require("dotenv").config();
+if (process.env.NODE_ENV!="production") { require("dotenv").config() }
 
 const Match = require("./models/match");
 
@@ -85,12 +85,11 @@ io.on("connection", (sock) => {
     sock.emit("message", [text, "me"])
     sock.to(room).emit("message", [text, "other"])
 
-    console.log(io.sockets.adapter.rooms)
-      console.log(io.sockets.adapter.rooms);
-      console.log(typeof(io.sockets.adapter.rooms));
-      console.log(sock.rooms)
-      console.log(rooms)
-
+    // console.log(io.sockets.adapter.rooms)
+    //   console.log(io.sockets.adapter.rooms);
+    //   console.log(typeof(io.sockets.adapter.rooms));
+    //   console.log(sock.rooms)
+    //   console.log(rooms)
 
 
   });

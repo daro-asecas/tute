@@ -36,7 +36,7 @@ input {
 #error {
   color:brown;
   font-weight: 900;
-  margin-top: -1rem;
+  margin-top: -0.7rem;
   padding-left: 0.4rem;
   height:0;
 }

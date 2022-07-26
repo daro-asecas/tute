@@ -32,8 +32,6 @@ function showError (msg) {
 }
 
 function error (error) {
-  console.log(error)
-  sock.emit("serverConsoleLog", error)
   switch (error) {
     case "fullRoom":
       showError("Game already started")
