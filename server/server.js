@@ -17,7 +17,7 @@ const server = http.createServer(app);
 
 const io = socketio(server, {
   cors: {
-    origin: ["https://tute-online.netlify.app", "localhost:8000"],
+    origin: ["https://tute-online.netlify.app"],
   }
 });
 
@@ -128,4 +128,4 @@ server.on("error", (err) => {
   console.error("Server error: ", err);
 });
 
-server.listen(process.env.PORT || 8080, () => {});
+server.listen(process.env.PORT || 5000, () => {console.log("Listening PORT:",process.env.PORT)});
