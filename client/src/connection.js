@@ -11,10 +11,10 @@
 
 // const serverURL = (process && process.env && process.env.SERVER_URL || "http://localhost:5000")
     
-const serverURL = (typeof(process)!="undefined" && typeof(process.env)!="undefined" && proces.env.SERVER_URL!="undefined")? process.env.SERVER_URL : "http://localhost:5000"
+const serverURL = (typeof(process)!="undefined" && typeof(process.env)!="undefined" && process.env.SERVER_URL!="undefined")? process.env.SERVER_URL : "http://localhost:5000"
 const sock = io(serverURL);
 const titulo = document.querySelector("h1")
-titulo.innerHTML = serverURL
+titulo.innerHTML = `variable:${serverURL} process.env:${process.env.SERVER_URL}`
 // console.log(serverURL);
 
 
