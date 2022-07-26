@@ -6,12 +6,12 @@
 
 // si esto esta superado se puede eliminar
 // let serverURL;
-// if (process && !!process.env && !!process.env.SERVERURL) { serverURL = process.env.SERVERURL
+// if (process && !!process.env && !!process.env.SERVER_URL) { serverURL = process.env.SERVER_URL
 // } else { serverURL = "http://localhost:5000" }
 
-// const serverURL = (process && process.env && process.env.SERVERURL || "http://localhost:5000")
+// const serverURL = (process && process.env && process.env.SERVER_URL || "http://localhost:5000")
     
-const serverURL = (typeof(process)!="undefined" && typeof(process.env)!="undefined" && proces.env.SERVERURL)? process.env.SERVERURL : "http://localhost:5000"
+const serverURL = (typeof(process)!="undefined" && typeof(process.env)!="undefined" && proces.env.SERVER_URL!="undefined")? process.env.SERVER_URL : "http://localhost:5000"
 const sock = io(serverURL);
 const titulo = document.querySelector("h1")
 titulo.innerHTML = serverURL
