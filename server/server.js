@@ -1,7 +1,7 @@
 const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
-if (process.env.NODE_ENV!="production") { require("dotenv").config() }
+if (process.env.NODE_ENV!=="production") { require("dotenv").config() }
 
 const Match = require("./models/match");
 
