@@ -10,12 +10,14 @@
 // } else { serverURL = "http://localhost:5000" }
 
 // const serverURL = (process && process.env && process.env.SERVER_URL || "http://localhost:5000")
-    
-const serverURL = (typeof(process)!="undefined" && typeof(process.env)!="undefined" && process.env.SERVER_URL!="undefined")? process.env.SERVER_URL : "http://localhost:5000"
+// const serverURL = (typeof(process)!="undefined" && typeof(process.env)!="undefined" && process.env.SERVER_URL!="undefined")? process.env.SERVER_URL : "http://localhost:5000"
+
+if(!serverURL) { const serverURL = "http://localhost:5000" }
+console.log(serverURL);
+
 const sock = io(serverURL);
 const titulo = document.querySelector("h1")
-titulo.innerHTML = `variable:${serverURL} process.env:${process.env.SERVER_URL}`
-// console.log(serverURL);
+titulo.innerHTML = `variable:${serverURL}`
 
 
 // Guardar nombre de usuario, por ahora lo dejo comentado para mas adelante
