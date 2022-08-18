@@ -5,8 +5,8 @@
 
 // if(typeof(serverURL)=="undefined") { 
 //   console.log("entra2")
-  const serverURL = "http://localhost:5000" // } // esto es porque en NETLIFY hay un SnippetInjection de esta variable!!
-  const sock = io(serverURL);
+//  const serverURL = "http://localhost:5000" // } // esto es porque en NETLIFY hay un SnippetInjection de esta variable!!
+  const sock = io(serverURL || "http://localhost:5000");
 
 // Guardar nombre de usuario, por ahora lo dejo comentado para mas adelante
 // let userName = localStorage.userName;
