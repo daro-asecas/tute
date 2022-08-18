@@ -1,25 +1,59 @@
-#game-wrapper, .game-wrapper > *, .game-wrapper > *::after, .game-wrapper > *::before {
+#game-wrapper, #table, #hand {
   box-sizing: border-box;
 }
 
 #game-wrapper {
-  background-color: green;
-  padding: 1.3rem;
-  display: grid;
-  grid-template-columns: repeat(2, 4rem);
-  grid-template-rows: 7rem 2rem 7rem;
-  gap: .5rem;
-  justify-content: center;
+  background-color: black;
+  position:relative;
+  display:flex;
+  flex-direction: column;
+  justify-content: space-between;
   user-select: none;
 }
 
-.deck{
-  height: 100%;
-  width: 100%;
+#table {
+  background-color: green;
+  border: 4px solid rgb(173, 122, 46);
+  border-radius: 50%;
+  height: 30rem;
+  width: 30rem;
+  margin: 2.5rem auto 0;
+  padding: 0;
+  display:flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+}
+
+#center {
+  margin: auto;
+  position:relative;
+  height: 0;
+  width: 0;
+}
+
+.player-slot {
+  position: absolute;
+  top: 10rem;
+  transform-origin: 4rem -6rem;
+  width: 8rem;
+  height: 8rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-content: center;
+  align-items: center;
+  margin: 0 auto;
+}
+
+.pile{
+  height: 3rem;
+  width: 4.85rem;
   display: flex;
   justify-content: center;
   align-items: center;
   font-size: 3rem;
+  border: solid 1px black ;
   border-radius: .5rem;
   background-image:
   repeating-linear-gradient(135deg,
@@ -58,12 +92,15 @@
   user-select: none;
 }
 
-.empty-deck{
-  visibility: hidden;
+.pile.empty-pile{
+  opacity: 0;
+  /* visibility: hidden; */
 }
 
-.game-message{
-  grid-column: span 2;
+#game-message{
+  position: absolute;
+  height: 11rem;
+  width: 11rem;
   display: flex;
   justify-content: center;
   text-align: center;
@@ -74,10 +111,15 @@
   -webkit-text-stroke: 1px black;
 }
 
+.card-slot {
+  height: 4.85rem;
+  width: 3rem;
+}
+
 .card {
   position: relative;
-  height: 100%;
-  width: 100%;
+  height: 4.85rem;
+  width: 3rem;
   background-color: white;
   border: solid 1px black ;
   border-radius: .5rem;
@@ -99,22 +141,43 @@
 .card::before,
 .card::after {
   position: absolute;
-  content: attr(data-value);
+  content: attr(data-number);
   font-size: 1rem;
 }
 
 .card::before {
-  top: .5rem;
-  left: .5rem;
+  top: 3%;
+  left: 5%;
 }
 
 .card::after {
-  bottom: .5rem;
-  right: .5rem;
+  bottom: 3%;
+  right: 5%;
   transform: rotate(180deg)
 }
 
-#invite-btn {
-  font-size:2rem;
-  padding: 7px;
+#triumph-suit {
+  position: absolute;
+  right: 0.3rem;
+  top: 0;
+  color: white;
+  font-weight: bold;
+  font-size: 2rem;
+  text-transform: uppercase;
+}
+
+#hand {
+  display: flex;
+  flex-direction: row-reverse;
+  justify-content: center;
+}
+
+#hand > .card {
+  height: 6rem;
+  width: 3.5rem;
+  opacity: 50%;
+}
+
+#hand > .card.playable {
+  opacity: 100%;
 }

@@ -1,110 +1,118 @@
+const Match = require("./models/match");
+const Room = require("./models/room");
+
 const http = require("http");
 const express = require("express");
 const socketio = require("socket.io");
 if (process.env.NODE_ENV!=="production") { require("dotenv").config() }
-
-const Match = require("./models/match");
-
-const Room = require("./models/room");
-
 const app = express();
-
 const clientPath = `${__dirname}/../client`;
-
 app.use(express.static(clientPath));
-
 const server = http.createServer(app);
 
-const io = socketio(server, {
+const ID_LENGTH = 5;
+const CHARACTER_SET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+function newId(length) {
+  let id = ""
+  for ( let i=0; i<length ; i++ ) {
+    let index = Math.floor(Math.random()*CHARACTER_SET.length)
+    id = id.concat(CHARACTER_SET[index])
+  }
+  if(id in matches) { return newId(length)
+  } else { return id }
+}
+
+  const io = socketio(server, {
   cors: {
     origin: ["https://tute-online.netlify.app"],
   }
 });
+module.exports = io;
 
 let rooms = {}
+let matches = {}
 
 // Cuando alguien entra
 io.on("connection", (sock) => {
   console.log("Someone in")
+  sock.emit("message", ["Welcome to TUTE-ONLINE ", "server"])
 
 
   // Para crear una sala
   sock.on("createRoom", () => {
-    const match = `match.html?match=${sock.id.slice(0, 5)}`;
-    sock.emit("redirect", match);
-    sock.emit("message", ["To try the app open it in two tabs", "server"])
+    const match = newId(ID_LENGTH);
+    sock.emit("redirect", `match.html?match=${match}`);
   })
 
 
   // Para unirse a una sala
   sock.on("joinRoom", (roomName) => {
     if (roomName === process.env.ADMIN) {sock.emit("redirect", "admin.html");
+    // } else if (roomName.substring(0,3) === "bot" && typeof(+roomName.substring(3,4)) === "number" && roomName.length === 4) {
+    //   const match = `match.html?match=${roomName}`;
+    //   sock.emit("redirect", match)
     } else {
       const match = `match.html?match=${roomName}`;
 
-      let clients = io.sockets.adapter.rooms.get(roomName); // clientes metidos ANTES que este sock
-      const numClients = clients ? clients.size : 0;
+      // let clients = io.sockets.adapter.rooms.get(roomName); // clientes metidos ANTES que este sock
+      // const numClients = clients ? clients.size : 0;
 
 
-      if (!numClients) {
+      if (!(id in matches)) {
         sock.emit("error", "unexistingRoom")
-      } else if (numClients === 1) {
-        sock.emit("redirect", match);
+      // } else if ( GAMESTARTED and !ALLOWSPECTATORS ) {
+      //   sock.emit("error", "spectatorsNotAllowed")
       } else {
-        sock.emit("error", "fullRoom")
+        sock.emit("redirect", match)
       }
     }
   })
-  
+
   // Para iniciar el juego <(<( en este punto se JOINEA a la ROOM de SOCKETIO )>)>
-  sock.on("joinGame", (roomName) => {
-    let roomKey = `room: ${roomName}`
-    if (!rooms[roomKey]) {rooms[roomKey] = new Room ()}
-    let clients = io.sockets.adapter.rooms.get(roomName); // clientes metidos ANTES que este sock
-    rooms[roomKey].numClients = clients ? clients.size : 0;
+  sock.on("joinGame", (code) => {
+    let roomName = code
+    let clients
 
-    if (!rooms[roomKey].numClients) {
-      rooms[roomKey].waitingPlayer = sock
-      sock.emit("message", ["To try the app open it in two tabs", "server"])
-      sock.join(roomName);
-    } else if (rooms[roomKey].numClients === 1) {
-      sock.join(roomName);
-      io.in(roomName).emit("message", ["Match starts", "server"])
-      new Match(roomName, rooms[roomKey].waitingPlayer, sock);
-      rooms[roomKey].waitingPlayer = null;
-      io.in(roomName).emit("matchStart")
-    } else {
-      sock.emit("error", "fullRoom")
-    }
+    // Manejar codigo especial "bot_" generando una id distinta a la de la URL
+    // if (roomName.substring(0,3) === "bot" && typeof(+roomName.substring(3,4)) === "number"  && roomName.length === 4) {
+    //   roomName = newId(5) }
 
+
+    // Si es el primero de la sala, crear la nueva Room
+    if (!(roomName in matches)) {
+      // rooms[roomName] = new Room (roomName, sock)
+      matches[roomName] = new Match(roomName, sock)
+    } else { matches[roomName].joinRoom(sock) }
+
+
+    // console.log(rooms[roomName].numClients, "jugadores previos a este")
+    // rooms[roomName].numClients = rooms[roomName].numClients + 1;
+
+    sock.join(roomName);
+
+
+    sock.on('disconnect', () => {
+      matches[roomName].leaveRoom(sock)
+    })
   })
-  
+
 
   // Para el chat
   sock.on("message", (text, room) => {
     sock.emit("message", [text, "me"])
     sock.to(room).emit("message", [text, "other"])
-
-    // console.log(io.sockets.adapter.rooms)
-    //   console.log(io.sockets.adapter.rooms);
-    //   console.log(typeof(io.sockets.adapter.rooms));
-    //   console.log(sock.rooms)
-    //   console.log(rooms)
-
-
   });
-
 
   // Para el admin
   sock.on("command", (text) => {
-    
+
     response = "" // hacer estoooooooooooooooooooooooooooooooooo
     sock.emit("response", [response, "response"])
   });
 
 
   sock.on("requestReload", () => {
-    
+
     rooms.forEach((id) => {
       console.log(id,"  =>  ");
     })
@@ -112,12 +120,9 @@ io.on("connection", (sock) => {
   });
 
 
-
-
-
-  // Generica para debuguear
+  // Funcion para debuguear
   sock.on("serverConsoleLog", (msg) => {
-    console.log(msg);
+    console.log(eval(msg));
   });
 });
 
@@ -128,4 +133,7 @@ server.on("error", (err) => {
   console.error("Server error: ", err);
 });
 
-server.listen(process.env.PORT || 5000, () => {console.log("Listening PORT:",process.env.PORT)});
+port = (process.env.PORT || 5000);
+server.listen(port, () => {console.log("Listening PORT:",port)});
+
+module.exports = matches

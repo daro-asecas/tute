@@ -20,8 +20,6 @@ const onFormSubmitted = (e) => {
 };
 
 
-document
-  .querySelector("#chat-form")
-  .addEventListener("submit", onFormSubmitted);
+document.querySelector("#chat-form").addEventListener("submit", onFormSubmitted);
 
 const room = window.location.href.substring(window.location.href.length-5)

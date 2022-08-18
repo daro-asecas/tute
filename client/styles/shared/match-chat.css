@@ -15,7 +15,7 @@
   display:flex;
   flex-direction: column;
   gap: 0.1rem;
-  overflow-y: scroll;
+  overflow-y: auto;
   word-break: break-word;
 }
 
@@ -55,7 +55,8 @@
   display: flex;
 }
 
-  #chat-form input {
+#chat-form input {
+  text-align: left;
   outline: none;
   font-size: 1.0rem;
   margin: 0;

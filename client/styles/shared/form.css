@@ -1,10 +1,10 @@
-button, #invite-btn {
+button, .button {
+  background-color: #00bcd4;
+  color: white;
   text-transform: uppercase;
   font-size: 0.8rem;
   padding: 3px 15px;
-  color: white;
   line-height: 25px;
-  background-color: #00bcd4;
   border: none;
   border-radius: 2px;
   cursor: pointer;
@@ -14,15 +14,182 @@ button, #invite-btn {
   outline: none;
 }
 
-button:hover, #invite-btn:hover {
-    background-color: #79d7e4;
+button:hover, .button:hover {
+  background-color: #79d7e4;
+}
+
+button:active, .button:active {
+  transform: scale(0.97, 0.97);
+}
+
+button.disabled, .button.disabled {
+  background-color: #CCC;
+  color: #777;
+  cursor: unset;
+}
+
+button.disabled:hover, .button.disabled:hover {
+  background-color: #CCC;
+}
+
+button.disabled:active, .button.disabled:active {
+  transform: unset;
+}
+
+
+select {
+  background-color: #007a8a;
+  color: white;
+  border: solid 1px rgb(193, 239, 255);
+  width: 100%;
+  border-radius: 0.2rem;
+  text-align: center;
+  appearance: none;
+  cursor: pointer;
+}
+
+select:focus {
+  border: solid 2px rgb(193, 239, 255);
+  outline: none;
 }
 
 input {
   border: solid 1px lightgray;
   font-size: 1.0rem;
+  text-align: center;
 }
 
 ::-webkit-input-placeholder {
   font-style: italic;
+}
+
+
+/* TOGGLE SWITCH  */
+
+.toggle {
+  /* opacity: 0;
+  position: absolute;
+  left: -9000px;
+  top: -9000px; */
+  display: none;
+}
+
+.toggle:checked {
+  background-color: #4CD964;
+}
+
+.toggle:checked:before {
+  left: 32px;
+}
+
+
+input[type="checkbox"].toggle + label {
+  position: relative;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+input[type="checkbox"].toggle + label::before {
+  content: "";
+  width: 2em;
+  height: 1em;
+  background-color: hsl(0, 80%, 90%);
+  border-radius: 1em;
+  margin-right: .25em;
+  transition: background-color 200ms ease-in-out;
+}
+
+input[type="checkbox"].toggle + label::after {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: absolute;
+  content: "\2715";
+  font-size: .5em;
+  height: .9em;
+  left: .2em;
+  width: 1.8em;
+  height: 1.8em;
+  background-color: hsl(0, 80%, 60%);
+  color: white;
+  border-radius: 1em;
+  transition: background-color 200ms ease-in-out, transform 200ms ease-in-out;
+}
+
+input[type="checkbox"].toggle:checked + label::before {
+  background-color: hsl(100, 70%, 90%);
+}
+
+input[type="checkbox"].toggle:checked + label::after {
+  content: "\2713";
+  transform: translateX(100%);
+  background-color: hsl(100, 70%, 60%);
+}
+
+input[type="checkbox"].toggle:disabled + label {
+  color: #777;
+}
+
+input[type="checkbox"].toggle:disabled + label::before {
+  background-color: #CCC;
+}
+
+input[type="checkbox"].toggle:disabled + label::after {
+  background-color: #777;
+}
+
+
+/* NUMBER STEPPER  */
+
+.number-stepper-input {
+  display: flex;
+  width: fit-content;
+  gap: 0.2rem;
+  flex-direction: row;
+  justify-content: space-between;
+  align-content: center;
+  align-items: center;
+}
+
+.stepper {
+  width: 1.5rem;
+  background-color: transparent;
+  border: 0;
+  color: inherit;
+  font-weight: bold;
+  text-align: center;
+  vertical-align: middle;
+}
+
+.stepper-input-modifiers {
+  font-family: monospace;
+  cursor: pointer;
+  color: white;
+  background-color: #007a8a;
+  border: solid 2px rgb(193, 239, 255);
+  height: 1.2rem;
+  width: 2.4rem;
+  margin-inline: -1rem;
+  transform: scaleX(0.5);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center;
+}
+
+.stepper-input-modifiers.decrement {
+  padding-right: 0.2rem;
+}
+.stepper-input-modifiers.increment {
+  padding-left: 0.2rem;
+}
+
+.stepper-input-modifiers:hover {
+  background-color: #79d7e4;
+}
+
+.stepper-input-modifiers:active {
+  transform: scale(0.44, 0.88);
 }

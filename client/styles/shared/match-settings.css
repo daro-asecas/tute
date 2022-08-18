@@ -1,0 +1,196 @@
+@import "./form.css";
+
+/* #settings-wrapper * {border:solid 1px white;} */
+
+.im-not-host * {
+  pointer-events: none;
+}
+
+#settings-wrapper {
+  padding: 2rem;
+  gap: 2rem;
+  display: flex;
+  justify-content: space-between;
+  flex-direction: row;
+  flex-wrap: wrap;
+  background-color: black;
+  color: white;
+}
+
+#settings-wrapper > *{
+  border-radius:0.5rem;
+}
+
+#players-wrapper, #all-settings {
+  border: solid 2px lightgray;
+  background-color: rgb(75, 75, 75);
+  padding: 0.5rem;
+  list-style: none;
+  display:flex;
+  flex-direction: column;
+  gap: 0.1rem;
+}
+
+#players-wrapper {
+  min-width: 25%;
+  overflow: auto;
+}
+
+#invite-btn, #add-bot-btn {
+  margin-top: 1rem;
+  background-color: #007a8a;
+  border: solid 1px rgb(193, 239, 255);
+  font-size: 0.8rem;
+  text-align: center;
+  padding: 0.2rem;
+}
+
+#invite-btn:hover, #add-bot-btn:hover {
+  background-color: #79d7e4;
+}
+
+#invite-btn:active, #add-bot-btn:active{
+  transform: scale(0.88, 0.88);
+}
+
+
+#players-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+#settings-wrapper ul {
+  padding-inline-start: 0px;
+  margin-bottom: 0.2rem;
+  gap:0.5rem;
+}
+
+#settings-wrapper li,
+#bot-count-li {
+  background-color: black;
+  width: 100%;
+  height: 1.8rem;
+  border: solid 1px lightgray;
+  border-radius: 5px;
+  display: flex;
+  font-size: 1.2rem;
+  align-content: center;
+  align-items: center;
+}
+
+#bot-count-li {
+  margin-top: 1rem;
+}
+
+#players-wrapper li,
+#bot-count-li {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+}
+
+div#bot-count-li {
+  display: flex;
+  justify-content: space-around;
+  padding-right: 0.3rem;
+}
+
+#all-settings {
+  flex-basis:50%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
+
+#settings,
+#coming-soon-settings {
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+#settings li,
+#coming-soon-settings li {
+  position: relative;
+  justify-content: space-between;
+  padding: 0.175rem 0.3rem;
+}
+
+/* input, select, .number-input, label { */
+.input-div {
+  position: relative;
+  width: 35%;
+  flex-grow: 0;
+  justify-self: flex-end;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.option-name {
+  flex-grow: 1;
+  height: 100%;
+  vertical-align: middle;
+}
+
+.info {
+  display: none;
+  position: absolute;
+  top: 1.8rem;
+  width: 95%;
+  background-color: #007a8a;
+  border: solid 3px #79d7e4;
+  border-radius: 0.3rem;
+  padding: 0.3rem;
+  font-size: 0.9rem;
+  text-align: justify;
+  z-index: 1;
+}
+
+#settings-wrapper .toggle + label {
+  transform: scale(1.1, 1.1)
+}
+
+div:hover ~ .info {
+  display: unset;
+}
+
+.info:hover {
+  display: none;
+}
+
+#start-game-button {
+  padding: 0.5rem;
+  flex-basis: 100%;
+  /* align-self: flex-end; */
+  border-radius: 0.8rem;
+  font-size: 2.5rem;
+  font-weight: bolder;
+}
+
+#start-game-button.disabled {
+  font-size: 2rem;
+}
+
+h2 {
+  margin: 0;
+}
+
+h4 {
+  margin: 0 0 0.5rem;
+}
+
+/* #pannel-title {
+  font-size: 1.2rem;
+  font-weight: bold;
+  border: 1px solid lightgrey;
+  background-color: whitesmoke;
+  display: flex;
+  align-items: center;
+  padding: 0.2rem;
+} */
