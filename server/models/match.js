@@ -133,18 +133,18 @@ class Match {
     console.log(this.humanPlayers.length)
     console.log(this.humanPlayerNames)
     
-    if (this.numberOfHumanPlayers === 0) {
-      delete matches[this.room]
-      console.log("la deletea")
-      console.log(matches[this.room])
-    } else {
-      sock.to(this.room).emit("message", ["Someone left", "server"])
-      if (sock === this.host ) {
-        this.makeHost(this.humanPlayers[0])
-        this.emitEventToAllPlayers("updatePlayerList", this.humanPlayerNames)
-      }
-      this.host.emit("updateMatchStart", this.allowMatchStart)
-    }
+    // if (this.numberOfHumanPlayers === 0) {
+    //   delete matches[this.room]
+    //   console.log("la deletea")
+    //   console.log(matches[this.room])
+    // } else {
+    //   sock.to(this.room).emit("message", ["Someone left", "server"])
+    //   if (sock === this.host ) {
+    //     this.makeHost(this.humanPlayers[0])
+    //     this.emitEventToAllPlayers("updatePlayerList", this.humanPlayerNames)
+    //   }
+    //   this.host.emit("updateMatchStart", this.allowMatchStart)
+    // }
   }
 
 
