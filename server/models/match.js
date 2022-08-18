@@ -52,8 +52,6 @@ class Match {
   }
 
   get allowMatchStart() {
-    console.log("botNum", this.botNum)
-    console.log("this.numberOfHumanPlayers", this.numberOfHumanPlayers)
     if (this.botNum + this.numberOfHumanPlayers < 3 || this.botNum + this.numberOfHumanPlayers > 5 ) { return false
     } else { return true}
   }
@@ -107,7 +105,6 @@ class Match {
 
   updateBotCount(number) {
     this.botNum = number
-    console.log("UBCFS")
     this.host.emit("updateMatchStart", this.allowMatchStart)
     this.emitEventToAllPlayersButHost("updateBotCountFromServer", number)
   }
