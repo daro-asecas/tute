@@ -256,7 +256,7 @@ class Match {
   }
 
   trickResult() {
-    messages = [`P${winner} won`]
+    messages = [`${this.playerNames[winner]} won`]
     this.sendToAllPlayers(messages)
     this.nextTrick()
   }
