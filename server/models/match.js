@@ -61,8 +61,6 @@ class Match {
   get areAllBots() {
     return (this.numberOfHumanPlayers === 1)
   }
-
-
   
   sendToOnePlayer(playerIndex, msg) {
     this.players[playerIndex].emit("gameMessage", msg);
@@ -94,8 +92,7 @@ class Match {
     });
   };
 
-  
-  makeHost(sock) {
+    makeHost(sock) {
     this.host = sock
     this.host.emit("youAreHost", this.areAllBots)
     this.host.emit("message", ["You are host", "server"])
@@ -108,9 +105,8 @@ class Match {
     this.emitEventToAllPlayersButHost("updateSettingsFromServer", this.settings)
   }
 
-
   updateBotCount(number) {
-    botNum = number
+    this.botNum = number
     console.log("UBCFS")
     this.host.emit("updateMatchStart", this.allowMatchStart)
     this.emitEventToAllPlayersButHost("updateBotCountFromServer", number)
@@ -124,9 +120,40 @@ class Match {
 
   }
 
+  joinRoom(sock) {
+    sock.to(this.room).emit("message", ["Someone joined", "server"])
+    this.humanPlayers.push(sock)
+    console.log(this.humanPlayerNames)
+    this.emitEventToAllPlayers("updatePlayerList", this.humanPlayerNames)
+    this.updateSettingsWrapper()
+  }
+
+  leaveRoom(sock) {
+    console.log("leaves")
+    console.log(this.humanPlayers.length)
+    console.log(this.humanPlayerNames)
+    this.humanPlayers = this.humanPlayers.filter((value=>{return value != sock}))
+    console.log(this.humanPlayers.length)
+    console.log(this.humanPlayerNames)
+    
+    if (this.numberOfHumanPlayers === 0) {
+      delete matches[this.room]
+      console.log("la deletea")
+      console.log(matches[this.room])
+    } else {
+      sock.to(this.room).emit("message", ["Someone left", "server"])
+      if (sock === this.host ) {
+        this.makeHost(this.humanPlayers[0])
+        this.emitEventToAllPlayers("updatePlayerList", this.humanPlayerNames)
+      }
+      this.host.emit("updateMatchStart", this.allowMatchStart)
+    }
+  }
+
+
   sitInRandomOrder() {
     this.players = this.humanPlayers
-    for (let i=1; i<=botNum; i++) {
+    for (let i=1; i<=this.botNum; i++) {
       this.players.push(new Bot(`Bot ${i}` ))
     }
 
@@ -138,18 +165,17 @@ class Match {
       this.players[i] = oldValue
     }
 
-
-
   }
-
 
   startMatch() {
     this.emitEventToAllPlayers("message", "Match starts", "server")
 
-
     if (this.areAllBots) {                                      // baja el tiempo de respuesta
       this.players.forEach((player) => { if( player instanceof Bot)  { player.responseTime = 1 }})
     }
+
+    this.sitInRandomOrder()
+
     this.players.forEach((player, index) => {                  // listener de "turn"
       if( player instanceof Bot)  {
         player.makePlay = (cardIndex) => {
@@ -170,36 +196,8 @@ class Match {
     this.startGame()
   }
 
-  joinRoom(sock) {
-    sock.to(this.room).emit("message", ["Someone joined", "server"])
-    this.humanPlayers.push(sock)
-    console.log(this.humanPlayerNames)
-    this.emitEventToAllPlayers("updatePlayerList", this.humanPlayerNames)
-    this.updateSettingsWrapper()
-  }
-
-  leaveRoom(sock) {
-    console.log("leaves")
-    console.log(this.humanPlayers.length)
-    this.humanPlayers = this.humanPlayers.filter((value=>{return value != sock}))
-    console.log(this.humanPlayers.length)
-    
-    if (this.numberOfHumanPlayers === 0) {
-      delete matches[this.room]
-      console.log("la deletea")
-      console.log(matches[this.room])
-    } else {
-      sock.to(this.room).emit("message", ["Someone left", "server"])
-      if (sock === this.host) {
-        this.makeHost(this.humanPlayers[0])
-        this.emitEventToAllPlayers("updatePlayerList", this.humanPlayerNames)
-      }
-      this.host.emit("updateMatchStart", this.allowMatchStart)
-    }
-  }
-
-
   startGame() {
+    // this.players = this.players      // hacer esto si habilito la opcion playerlimit
     triumphSuit = rules.nextSuit(triumphSuit)
     startingPlayer = (startingPlayer + 1) % this.numberOfPlayers
     nextPlayer = startingPlayer
@@ -212,8 +210,12 @@ class Match {
     piles = this.players.map(function() {return new Deck([])})
 
     this.players.forEach((player, index) => {
+      console.log(index)
+      console.log(player)
+      console.log(player instanceof Bot)
       player.emit("deal", index, this.numberOfPlayers, this.playerNames, hands[index], triumphSuit, startingPlayer)
     })
+
     this.emitYourTurn(nextPlayer, rules.allPlayable(hands[nextPlayer]))
   }
 
