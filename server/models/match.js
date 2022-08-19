@@ -135,7 +135,6 @@ class Match {
 
   leaveRoom(sock) {
     this.humanPlayers = this.humanPlayers.filter((value=>{return value != sock}))
-    
     if (this.numberOfHumanPlayers != 0) {
       sock.to(this.room).emit("message", ["Someone left", "server"])
       if (sock === this.host ) {
@@ -146,9 +145,8 @@ class Match {
     }
   }
 
-
   sitInRandomOrder() {
-    this.players = this.humanPlayers
+    this.players = [...this.humanPlayers]
     for (let i=1; i<=this.botNum; i++) {
       this.players.push(new Bot(`Bot ${i}` ))
     }
@@ -166,7 +164,7 @@ class Match {
   startMatch() {
     this.emitEventToAllPlayers("message", "Match starts", "server")
 
-    if (this.areAllBots) {                                      // baja el tiempo de respuesta
+    if (this.areAllBots) {                                      // Baja el tiempo de respuesta. En el cliente se activa el listener del turn de los bots
       this.players.forEach((player) => { if( player instanceof Bot)  { player.responseTime = 1 }})
     }
 

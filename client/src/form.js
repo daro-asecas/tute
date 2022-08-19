@@ -17,6 +17,7 @@ const modifyStepper = (index, modification) => {
     break
     case 1:      
       if ( numberStepperInputs[index].innerText == 0) {
+        console.log("infineta")
         numberStepperInputs[index].innerText = "∞"
       }
       break

@@ -29,14 +29,27 @@ const genericPlayerSlot = ((i) => {
   const playerSlot = document.createElement("div")
   playerSlot.setAttribute("id", `player${i}-slot`)
   playerSlot.classList.add("player-slot")
+
   const playerCardSlot = document.createElement("div")
   playerCardSlot.setAttribute("id", `player${i}-card-slot`)
   playerCardSlot.classList.add("card-slot")
+  playerSlot.appendChild(playerCardSlot)
+
   const playerPile = document.createElement("div")
   playerPile.setAttribute("id", `player${i}-pile`)
   playerPile.classList.add("pile", "empty-pile")
-  playerSlot.appendChild(playerCardSlot)
   playerSlot.appendChild(playerPile)
+  
+  // if (i =! myNumber) {
+  //   const avatar = document.createElement("div")
+  //   avatar.setAttribute("id", `player${i}-avatar`)
+  //   avatar.classList.add("avatar")
+  //   playerSlot.appendChild(avatar)
+  
+  //   avatar.innerText(`${playerNames[i]}`)
+  //   playersSlots.push(document.querySelector(`#player${i}-slot`))
+    
+  // }
   center.appendChild(playerSlot)
   playersSlots.push(document.querySelector(`#player${i}-slot`))
   playersCardSlots.push(document.querySelector(`#player${i}-card-slot`))
