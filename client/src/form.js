@@ -36,14 +36,16 @@ const handLosesDouble = document.getElementById("hand-loses-double")
 const redeal = document.getElementById("redeal")
 let redealMemory
 
-handLosesDouble.addEventListener("change", () => {
+handLosesDouble.addEventListener("change", () => {disableRedealToggle()})
+
+const disableRedealToggle = () => {
   if (handLosesDouble.checked) {
     redeal.checked = redealMemory
     redeal.disabled = false
   }
   else {
-    redeal.disabled = true
     redealMemory = redeal.checked
     redeal.checked = false
+    redeal.disabled = true
   }
-})
+}

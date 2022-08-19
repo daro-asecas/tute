@@ -21,13 +21,22 @@ class Match {
     this.host = host
     this.humanPlayers = []
     this.players = []
-    this.settings = {}
+    this.settings = {
+      allowSpectators: true,
+      pointLimit: 4,
+      handLosesDouble: false,
+      allowRedeal: false,
+      playersLimit: 5,
+      hitch: 'no',
+      roundLoser: 'second'
+    }
+    this.isGameStarted = false
 
     this.host.emit("youAreHost", this.areAllBots)
     this.joinRoom(host)
 
-    this.host.on("updateBotCount", (number) => { this.updateBotCount(number) })
-    this.host.on("updateSettingsFromClient", (key, value) => { this.updateSettings() })
+    this.host.on("updateBotCount", (number) => { this.updateBotCountFromHost(number) })
+    this.host.on("updateSettingsFromHost", (key, value) => { this.updateSettingsFromHost(key, value) })
     this.host.on("changeInPlayersList", (number) => { this.changeInPlayersList() })
     this.host.on("startMatch", () => { this.startMatch() })
     // this.host.on("startMatch", this.startMatch)         // no se por que esta no funciono
@@ -51,7 +60,7 @@ class Match {
     return this.humanPlayers.map((player, index) => { return player.name || `Player ${index+1}`})
   }
 
-  get allowMatchStart() {
+  get isAllowedMatchStart() {
     if (this.botNum + this.numberOfHumanPlayers < 3 || this.botNum + this.numberOfHumanPlayers > 5 ) { return false
     } else { return true}
   }
@@ -71,7 +80,8 @@ class Match {
   };
 
   sendToAllPlayersButHost(messages) {
-    this.players.forEach((player, index) => {
+    const playersArray = (this.isGameStarted)?this.players:this.humanPlayers
+    playersArray.forEach((player, index) => {
       if(this.host != player) {
         player.emit("gameMessage", messages[index] || messages)
       }
@@ -79,13 +89,15 @@ class Match {
   };
 
   emitEventToAllPlayers(event, ...parameters) {
-    this.players.forEach((player) => {
+    const playersArray = (this.isGameStarted)?this.players:this.humanPlayers
+    playersArray.forEach((player) => {
       player.emit(event, parameters)
     });
   };
 
   emitEventToAllPlayersButHost(event, ...parameters) {
-    this.players.forEach((player, index) => {
+    const playersArray = (this.isGameStarted)?this.players:this.humanPlayers
+    playersArray.forEach((player, index) => {
       if (index != 0) { player.emit(event, parameters) }
     });
   };
@@ -97,54 +109,41 @@ class Match {
     this.host.to(this.room).emit("message", [`${this.humanPlayerNames[0]} is host now`, "server"])
   };
 
-  updateSettingsWrapper() {
-    this.host.emit("updateMatchStart", this.allowMatchStart)
+  updateSettingsScreen() {
+    this.emitEventToAllPlayers("updatePlayerList", this.humanPlayerNames)
+    this.emitEventToAllPlayersButHost("updateAllSettingsFromServer", this.settings)
     this.emitEventToAllPlayersButHost("updateBotCountFromServer", this.botNum)
-    this.emitEventToAllPlayersButHost("updateSettingsFromServer", this.settings)
+    this.host.emit("updateMatchStartButton", this.isAllowedMatchStart)
   }
 
-  updateBotCount(number) {
+  updateBotCountFromHost(number) {
     this.botNum = number
-    this.host.emit("updateMatchStart", this.allowMatchStart)
-    this.emitEventToAllPlayersButHost("updateBotCountFromServer", number)
+    this.emitEventToAllPlayersButHost("updateBotCountFromServer", this.botNum)
+    this.host.emit("updateMatchStartButton", this.isAllowedMatchStart)
   }
 
-
-  updateSettings(key, value) {
+  updateSettingsFromHost(key, value) {
     this.settings[key] = value
-    console.log("updateSetting")
-    this.emitEventToAllPlayersButHost("updateSettingsFromServer", key, value)
-
+    this.emitEventToAllPlayersButHost("updateSingleSettingFromServer", key, value)
   }
 
   joinRoom(sock) {
     sock.to(this.room).emit("message", ["Someone joined", "server"])
     this.humanPlayers.push(sock)
-    console.log(this.humanPlayerNames)
-    this.emitEventToAllPlayers("updatePlayerList", this.humanPlayerNames)
-    this.updateSettingsWrapper()
+    this.updateSettingsScreen()
   }
 
   leaveRoom(sock) {
-    console.log("leaves")
-    console.log(this.humanPlayers.length)
-    console.log(this.humanPlayerNames)
     this.humanPlayers = this.humanPlayers.filter((value=>{return value != sock}))
-    console.log(this.humanPlayers.length)
-    console.log(this.humanPlayerNames)
     
-    // if (this.numberOfHumanPlayers === 0) {
-    //   delete matches[this.room]
-    //   console.log("la deletea")
-    //   console.log(matches[this.room])
-    // } else {
-    //   sock.to(this.room).emit("message", ["Someone left", "server"])
-    //   if (sock === this.host ) {
-    //     this.makeHost(this.humanPlayers[0])
-    //     this.emitEventToAllPlayers("updatePlayerList", this.humanPlayerNames)
-    //   }
-    //   this.host.emit("updateMatchStart", this.allowMatchStart)
-    // }
+    if (this.numberOfHumanPlayers != 0) {
+      sock.to(this.room).emit("message", ["Someone left", "server"])
+      if (sock === this.host ) {
+        this.makeHost(this.humanPlayers[0])
+      }
+      this.emitEventToAllPlayers("updatePlayerList", this.humanPlayerNames)
+      this.host.emit("updateMatchStartButton", this.isAllowedMatchStart)
+    }
   }
 
 
@@ -190,6 +189,7 @@ class Match {
     startingPlayer = Math.floor(Math.random() * this.numberOfPlayers)
     triumphSuit = rules.suitOrder[3]
     
+    this.isGameStarted = true
     this.startGame()
   }
 
@@ -207,9 +207,6 @@ class Match {
     piles = this.players.map(function() {return new Deck([])})
 
     this.players.forEach((player, index) => {
-      console.log(index)
-      console.log(player)
-      console.log(player instanceof Bot)
       player.emit("deal", index, this.numberOfPlayers, this.playerNames, hands[index], triumphSuit, startingPlayer)
     })
 

@@ -3,6 +3,7 @@
 
 const settingsWrapper = document.querySelector("#settings-wrapper");
 const playerList = document.querySelector("#players-list")
+const botCount = document.querySelector("#bot-count")
 const settingsModifiers = document.querySelectorAll(".settings-modifier")
 const modifiersKey = ["allowSpectators", "pointLimit", "pointLimit", "handLosesDouble", "allowRedeal", "playersLimit", "playersLimit", "hitch", "roundLoser"]
 const inviteBtn = document.querySelector("#invite-btn");
@@ -30,7 +31,6 @@ const addEventListener = ((settings) => {
   })
 })
 
-
 const createPlayerLi = (name => {
   const li = document.createElement("li")
   li.innerText = name
@@ -39,51 +39,56 @@ const createPlayerLi = (name => {
 
 const updatePlayerList = ([playerNames]) => {
   playerList.innerHTML = ""
-  playerNames.forEach(name => { createPlayerLi(name) })
-  
+  playerNames.forEach(name => { createPlayerLi(name) })  
 }
 sock.on("updatePlayerList", updatePlayerList)
 
-const updateBotCountFromServer = ((botCount) => {
-  Object.entries(settingsElements).forEach(entry => {
-    const [key, element] = entry
-    if (element.classList[0] === "stepper") { element.innerText = settings[key]
-    } else { element.value = settings[key] }
-  })
+const updateBotCountFromServer = ((numberOfBots) => {
+  botCount.innerText = numberOfBots
 })
 sock.on("updateBotCountFromServer", updateBotCountFromServer)
 
-const updateSettingsFromServer = ((settings) => {
+const updateSingleSettingFromServer = (([key, value]) => {
+  switch (settingsElements[key].classList[0]) {
+    case "stepper":
+      settingsElements[key].innerText = value
+      break;
+    case "toggle":
+      settingsElements[key].checked = value
+      if (key === "handLosesDouble") { 
+          disableRedealToggle() }
+      break;
+    default:
+      settingsElements[key].value = value
+      break;
+  }
+
+
+})
+sock.on("updateSingleSettingFromServer", updateSingleSettingFromServer)
+
+const updateAllSettingsFromServer = (([settingsFromServer]) => {
+  settings = settingsFromServer
   Object.entries(settingsElements).forEach(entry => {
     const [key, element] = entry
-    if (element.classList[0] === "stepper") { element.innerText = settings[key]
-    } else { element.value = settings[key] }
+    updateSingleSettingFromServer([key, settings[key]])
   })
-  // document.querySelector("#allow-spectators").value = settings.allowSpectators
-  // document.querySelector("#point-limit").innerText = settings.pointLimit
-  // document.querySelector("#hand-loses-double").value = settings.handLosesDouble
-  // document.querySelector("#redeal").value = settings.allowRedeal
-  // document.querySelector("#players-limit").innerText = settings.playersLimit
-  // document.querySelector("#hitch").value = settings.hitch
-  // document.querySelector("#round-loser").value = settings.roundLoser
 })
-sock.on("updateSettingsFromServer", updateSettingsFromServer)
+sock.on("updateAllSettingsFromServer", updateAllSettingsFromServer)
 
-const updateSettingsFromClient = (() => {
-  Object.entries(settingsElements).forEach(entry => {                             // entry = [key, value]
-    const [key, element] = entry
-    if (element.classList[0] === "stepper") { settings[key] = element.innerText
-    } else { settings[key] = element.value }
-  })
-
-
-  // document.querySelector("#allow-spectators").value = settings.allowSpectators
-  // document.querySelector("#point-limit").innerText = settings.pointLimit
-  // document.querySelector("#hand-loses-double").value = settings.handLosesDouble
-  // document.querySelector("#redeal").value = settings.allowRedeal
-  // document.querySelector("#players-limit").innerText = settings.playersLimit
-  // document.querySelector("#hitch").value = settings.hitch
-  // document.querySelector("#round-loser").value = settings.roundLoser
+const updateSettingsFromHost = ((btn,key) => {
+  switch (btn.classList[0]) {
+    case "stepper-input-modifiers":
+      settings[key] = settingsElements[key].innerText
+      break;
+      case "toggle":
+        settings[key] = btn.checked
+      break;
+    default:
+      settings[key] = btn.value
+      break;  
+  }
+  sock.emit("updateSettingsFromHost", key, settings[key])
 })
 
 const emitStartMatch = () => {
@@ -97,14 +102,6 @@ const emitStartMatch = () => {
   settings.roundLoser = document.querySelector("#round-loser").value
   sock.emit("startMatch")
 }
-
-// const createAddBotButton = () => {
-//   const addBotButton = document.createElement("button")
-//   addBotButton.setAttribute("id", `add-bot-btn`)
-//   addBotButton.innerHTML = "Add Bot"
-//   inviteBtn.parentNode.insertBefore(addBotButton, inviteBtn.nextSibling)
-//   inviteBtn.addEventListener("click", () => {sock.emit("addBot")})
-// }
 
 const createStartGameButton = () => {
   const button = document.createElement("button")
@@ -122,22 +119,20 @@ const hostFunctions = (allBots) => {
     element.classList.remove("im-not-host")
   })
 
-
   createStartGameButton()
-
   
   settingsModifiers.forEach((btn, index) => {
     btn.addEventListener("click", () => {
-      updateSettingsFromClient()
-      sock.emit("updateSettingsFromHost", modifiersKey[index], settings[modifiersKey[index]])
+      updateSettingsFromHost(btn, modifiersKey[index])
     })
   })
-  Object.entries(settingsElements).forEach(entry => {
-    const [key, element] = entry
-    value = (isStepper(element))?element.innerText:element.value
-    element.addEventListener("change", () => {
-      sock.emit("updateSettingsFromClient", key, value)})
-  })
+  // Object.entries(settingsElements).forEach(entry => {
+  //   const [key, element] = entry
+  //   value = (isStepper(element))?element.innerText:element.value
+  //   element.addEventListener("change", () => {
+  //     console.log("entra en change")
+  //     sock.emit("updateSettingsFromHost", key, value)})
+  // })
 
   areAllBots = allBots
   if (areAllBots) {
@@ -149,7 +144,7 @@ const hostFunctions = (allBots) => {
 }
 sock.on("youAreHost", hostFunctions)
 
-const updateMatchStart = (bool) => {
+const updateMatchStartButton = (bool) => {
   canStartMatch = bool
   if (canStartMatch) {
     startGameButton.classList.remove("disabled")
@@ -160,7 +155,7 @@ const updateMatchStart = (bool) => {
   }
 
 }
-sock.on("updateMatchStart", updateMatchStart)
+sock.on("updateMatchStartButton", updateMatchStartButton)
 
 
 

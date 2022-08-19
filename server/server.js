@@ -11,7 +11,7 @@ app.use(express.static(clientPath));
 const server = http.createServer(app);
 
 const ID_LENGTH = 5;
-const CHARACTER_SET = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ";
+const CHARACTER_SET = "abcdefghijklmnopqrstuvwxyz"; // ABCDEFGHIJKLMNOPQRSTUVWXYZ"; // se puede agregar para tener mas IDs
 function newId(length) {
   let id = ""
   for ( let i=0; i<length ; i++ ) {
@@ -58,10 +58,10 @@ io.on("connection", (sock) => {
       // const numClients = clients ? clients.size : 0;
 
 
-      if (!(id in matches)) {
+      if (!(roomName in matches)) {
         sock.emit("error", "unexistingRoom")
-      // } else if ( GAMESTARTED and !ALLOWSPECTATORS ) {
-      //   sock.emit("error", "spectatorsNotAllowed")
+      } else if ( matches[roomName].isGameStarted ) { // && !matches[roomName].ALLOWSPECTATORS ) {  // console.log(corregir esto en caso de aplicar allowSpectators)
+        sock.emit("error", "spectatorsNotAllowed")
       } else {
         sock.emit("redirect", match)
       }
@@ -71,7 +71,6 @@ io.on("connection", (sock) => {
   // Para iniciar el juego <(<( en este punto se JOINEA a la ROOM de SOCKETIO )>)>
   sock.on("joinGame", (code) => {
     let roomName = code
-    let clients
 
     // Manejar codigo especial "bot_" generando una id distinta a la de la URL
     // if (roomName.substring(0,3) === "bot" && typeof(+roomName.substring(3,4)) === "number"  && roomName.length === 4) {
@@ -93,6 +92,7 @@ io.on("connection", (sock) => {
 
     sock.on('disconnect', () => {
       matches[roomName].leaveRoom(sock)
+      if(matches[roomName].numberOfHumanPlayers === 0) { delete matches[roomName] }
     })
   })
 

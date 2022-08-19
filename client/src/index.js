@@ -39,6 +39,10 @@ function error (error) {
       case "unexistingRoom":
         showError("Incorrect game ID")   
         break
+        case "spectatorsNotAllowed":
+          showError("This game does not allow spectators")   
+          break
+
         default:
         sock.emit("serverConsoleLog", "Error parameter unknown")
   }
