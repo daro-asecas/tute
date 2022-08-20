@@ -1,7 +1,5 @@
 @import "./form.css";
 
-/* #settings-wrapper * {border:solid 1px white;} */
-
 .im-not-host * {
   pointer-events: none;
 }
@@ -17,7 +15,7 @@
   color: white;
 }
 
-#settings-wrapper > *{
+#settings-wrapper > * {
   border-radius:0.5rem;
 }
 
@@ -165,9 +163,9 @@ div:hover ~ .info {
 }
 
 #start-game-button {
-  padding: 0.5rem;
+  height: 5rem;
+  padding: 0;
   flex-basis: 100%;
-  /* align-self: flex-end; */
   border-radius: 0.8rem;
   font-size: 2.5rem;
   font-weight: bolder;
@@ -175,6 +173,17 @@ div:hover ~ .info {
 
 #start-game-button.disabled {
   font-size: 2rem;
+}
+
+#start-game-button.disabled::after {
+  content: attr(alert);
+  /* position: absolute; */
+  /* bottom: 4.1rem;
+  left: 1rem; */
+  /* color:brown; */
+  display: block ;
+  font-size: 1.05rem;
+  font-weight: bold;
 }
 
 h2 {

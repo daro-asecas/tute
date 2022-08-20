@@ -107,7 +107,7 @@ const createStartGameButton = () => {
   const button = document.createElement("button")
   button.setAttribute("id", "start-game-button")
   button.classList.add("disabled")
-  button.innerText = "Needed 3-6 Players"
+  button.innerText = "Start Game"
   settingsWrapper.appendChild(button)
   startGameButton = document.querySelector("#start-game-button")
   startGameButton.addEventListener("click", emitStartMatch)
@@ -133,10 +133,13 @@ const updateMatchStartButton = (bool) => {
   canStartMatch = bool
   if (canStartMatch) {
     startGameButton.classList.remove("disabled")
-    startGameButton.innerText = "Start Game"
+    startGameButton.setAttribute("alert", "")
+    // startGameButton.innerText = "Start Game"
   } else {
     startGameButton.classList.add("disabled")
-    startGameButton.innerText = "3 to 6 players needed"
+    // startGameButton.innerText = "3 to 5 players needed"
+    // startGameButton.alert = "3 to 5 players needed";
+    startGameButton.setAttribute("alert", "3 to 5 players needed")
   }
 
 }
