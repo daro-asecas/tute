@@ -6,30 +6,65 @@
 #match-wrapper {
   display: flex;
   flex-direction: row-reverse;
-  flex-wrap: wrap;
+  /* flex-wrap: wrap; */
   user-select: none;
 }
 
 #chat-wrapper {
   border: 1px solid lightgrey;
   margin: 0;
-  /* min-width: 400px; */
-  min-height: 10rem;
-  max-height: 40rem;
+  height: 100vh;
   flex-grow: 1;
+  flex-shrink: 1;
 }
 
 #settings-wrapper,
 #game-wrapper,
 #result-wrapper {
-  border:1px solid lightgray;
   margin: 0;
-  width: 35rem;
-  height: 38rem;
+  /* width: 35rem;
+  height: 38rem; */
   flex-grow: 1;
 }
 
 #game-wrapper,
 #result-wrapper {
   display: none;
+}
+
+@media (orientation: landscape) {
+  html {
+    font-size: 2.627vh;
+  }
+
+  #settings-wrapper,
+  #game-wrapper,
+  #result-wrapper {
+    height: 100vh;
+  }
+}
+
+@media (orientation: portrait) {
+
+  html {
+    font-size: 3vw;
+  }
+
+  #match-wrapper {
+    width: 100vw;
+    margin: 0;
+    flex-direction: column;
+    justify-content: center;
+  }
+  
+  #settings-wrapper,
+  #game-wrapper,
+  #result-wrapper {
+    width: 100vw;
+  }
+
+  #chat-wrapper {
+    height: 10rem;
+  }
+
 }
