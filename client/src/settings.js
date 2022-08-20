@@ -113,7 +113,7 @@ const createStartGameButton = () => {
   startGameButton.addEventListener("click", emitStartMatch)
 }
 
-const hostFunctions = (allBots) => {
+const hostFunctions = () => {
   imHost = true
   document.querySelectorAll(".im-not-host").forEach(element => {
     element.classList.remove("im-not-host")
@@ -126,21 +126,6 @@ const hostFunctions = (allBots) => {
       updateSettingsFromHost(btn, modifiersKey[index])
     })
   })
-  // Object.entries(settingsElements).forEach(entry => {
-  //   const [key, element] = entry
-  //   value = (isStepper(element))?element.innerText:element.value
-  //   element.addEventListener("change", () => {
-  //     console.log("entra en change")
-  //     sock.emit("updateSettingsFromHost", key, value)})
-  // })
-
-  areAllBots = allBots
-  if (areAllBots) {
-    firstBotMove = true
-    document.getElementById("table").addEventListener("click", () => {
-      sock.emit("nextTurn")})
-    } else { firstBotMove = false }
-    
 }
 sock.on("youAreHost", hostFunctions)
 
@@ -159,24 +144,19 @@ sock.on("updateMatchStartButton", updateMatchStartButton)
 
 
 
-
-
-
 document.addEventListener('DOMContentLoaded', (event) => {
-  const match = new URLSearchParams(window.location.search).get('match');
+  const match = new URLSearchParams(window.location.search).get("match");
   sock.emit("joinGame", match)
 })
 
 
-
-
-function error(error) {
-  if (error === "fullRoom") {
-    window.location.replace(`../index.html`);
+const error = ((error) => {
+  if (error === "spectatorsNotAllowed") {
+    window.location.replace(`../index.html?error=spectatorsNotAllowed`);
   } else {
     sock.emit("serverConsoleLog", "Error parameter unknown")
   }
-}
+})
 sock.on("error", error)
 
 

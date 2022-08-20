@@ -57,10 +57,9 @@ io.on("connection", (sock) => {
       // let clients = io.sockets.adapter.rooms.get(roomName); // clientes metidos ANTES que este sock
       // const numClients = clients ? clients.size : 0;
 
-
       if (!(roomName in matches)) {
         sock.emit("error", "unexistingRoom")
-      } else if ( matches[roomName].isGameStarted ) { // && !matches[roomName].ALLOWSPECTATORS ) {  // console.log(corregir esto en caso de aplicar allowSpectators)
+      } else if ( matches[roomName].isGameStarted ) { // && !matches[roomName].allowSpectators ) {  // console.log(corregir esto en caso de aplicar allowSpectators)
         sock.emit("error", "spectatorsNotAllowed")
       } else {
         sock.emit("redirect", match)
@@ -72,28 +71,27 @@ io.on("connection", (sock) => {
   sock.on("joinGame", (code) => {
     let roomName = code
 
-    // Manejar codigo especial "bot_" generando una id distinta a la de la URL
-    // if (roomName.substring(0,3) === "bot" && typeof(+roomName.substring(3,4)) === "number"  && roomName.length === 4) {
-    //   roomName = newId(5) }
+
+    if ( roomName in matches && matches[roomName].isGameStarted) {      // Acá van todos los chequeos de error
+      console.log("spectatorsNotAllowed")  
+      sock.emit("error", "spectatorsNotAllowed")
+    } else {
 
 
-    // Si es el primero de la sala, crear la nueva Room
-    if (!(roomName in matches)) {
-      // rooms[roomName] = new Room (roomName, sock)
-      matches[roomName] = new Match(roomName, sock)
-    } else { matches[roomName].joinRoom(sock) }
+      // Si es el primero de la sala, crear la nueva Room
+      if (!(roomName in matches)) {
+        // rooms[roomName] = new Room (roomName, sock)
+        matches[roomName] = new Match(roomName, sock)
+        } else { matches[roomName].joinRoom(sock) }
+
+      sock.join(roomName);
 
 
-    // console.log(rooms[roomName].numClients, "jugadores previos a este")
-    // rooms[roomName].numClients = rooms[roomName].numClients + 1;
-
-    sock.join(roomName);
-
-
-    sock.on('disconnect', () => {
-      matches[roomName].leaveRoom(sock)
-      if(matches[roomName].numberOfHumanPlayers === 0) { delete matches[roomName] }
-    })
+      sock.on('disconnect', () => {
+        matches[roomName].leaveRoom(sock)
+        if(matches[roomName].numberOfHumanPlayers === 0) { delete matches[roomName] }
+      })
+    }
   })
 
 
@@ -122,7 +120,7 @@ io.on("connection", (sock) => {
 
   // Funcion para debuguear
   sock.on("serverConsoleLog", (msg) => {
-    console.log(eval(msg));
+    console.log(msg);
   });
 });
 

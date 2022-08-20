@@ -16,10 +16,7 @@ const modifyStepper = (index, modification) => {
       sock.emit("updateBotCount", numberToReturn)
     break
     case 1:      
-      if ( numberStepperInputs[index].innerText == 0) {
-        console.log("infineta")
-        numberStepperInputs[index].innerText = "∞"
-      }
+      if ( numberToReturn == 0) { numberToReturn = "∞" }
       break
     }
   numberStepperInputs[index].innerText = numberToReturn

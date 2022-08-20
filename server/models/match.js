@@ -21,6 +21,7 @@ class Match {
     this.host = host
     this.humanPlayers = []
     this.players = []
+    this.playerNames = []
     this.settings = {
       allowSpectators: true,
       pointLimit: 4,
@@ -32,7 +33,7 @@ class Match {
     }
     this.isGameStarted = false
 
-    this.host.emit("youAreHost", this.areAllBots)
+    this.host.emit("youAreHost")
     this.joinRoom(host)
 
     this.host.on("updateBotCount", (number) => { this.updateBotCountFromHost(number) })
@@ -52,9 +53,9 @@ class Match {
     return this.humanPlayers.length
   }
 
-  get playerNames() {
-    return this.players.map((player, index) => { return player.name || `Player ${index+1}`})
-  }
+  // get playerNames() {
+  //   return this.players.map((player, index) => { return player.name || `Player ${index+1}`})
+  // }
 
   get humanPlayerNames() {
     return this.humanPlayers.map((player, index) => { return player.name || `Player ${index+1}`})
@@ -147,16 +148,25 @@ class Match {
 
   sitInRandomOrder() {
     this.players = [...this.humanPlayers]
+    this.playerNames = [...this.humanPlayerNames]
+
     for (let i=1; i<=this.botNum; i++) {
       this.players.push(new Bot(`Bot ${i}` ))
+      this.playerNames.push(`Bot ${i}`)
     }
+
 
 
     for (let i = this.players.length - 1; i > 0; i--) {
       const newIndex = Math.floor(Math.random() * (i)) + 1
-      const oldValue = this.players[newIndex]
+
+      const oldPlayer = this.players[newIndex]
       this.players[newIndex] = this.players[i]
-      this.players[i] = oldValue
+      this.players[i] = oldPlayer
+
+      const oldName = this.playerNames[newIndex]
+      this.playerNames[newIndex] = this.playerNames[i]
+      this.playerNames[i] = oldName
     }
 
   }
@@ -205,7 +215,7 @@ class Match {
     piles = this.players.map(function() {return new Deck([])})
 
     this.players.forEach((player, index) => {
-      player.emit("deal", index, this.numberOfPlayers, this.playerNames, hands[index], triumphSuit, startingPlayer)
+      player.emit("deal", index, this.numberOfPlayers, this.playerNames, hands[index], triumphSuit, startingPlayer, this.areAllBots)
     })
 
     this.emitYourTurn(nextPlayer, rules.allPlayable(hands[nextPlayer]))

@@ -7,6 +7,7 @@ const avatars = []
 const counts = []
 let myNumber, totalPlayers, playerNames, areAllBots, firstBotMove
 let firstRound =  true
+let botTurnListener = false
 
 const gameWrapper = document.querySelector("#game-wrapper");
 const resultWrapper = document.querySelector("#result-wrapper");
@@ -29,31 +30,25 @@ const genericPlayerSlot = ((i) => {
   const playerSlot = document.createElement("div")
   playerSlot.setAttribute("id", `player${i}-slot`)
   playerSlot.classList.add("player-slot")
-
   const playerCardSlot = document.createElement("div")
   playerCardSlot.setAttribute("id", `player${i}-card-slot`)
   playerCardSlot.classList.add("card-slot")
-  playerSlot.appendChild(playerCardSlot)
-
   const playerPile = document.createElement("div")
   playerPile.setAttribute("id", `player${i}-pile`)
   playerPile.classList.add("pile", "empty-pile")
+  playerSlot.appendChild(playerCardSlot)
   playerSlot.appendChild(playerPile)
-  
-  // if (i =! myNumber) {
-  //   const avatar = document.createElement("div")
-  //   avatar.setAttribute("id", `player${i}-avatar`)
-  //   avatar.classList.add("avatar")
-  //   playerSlot.appendChild(avatar)
-  
-  //   avatar.innerText(`${playerNames[i]}`)
-  //   playersSlots.push(document.querySelector(`#player${i}-slot`))
-    
-  // }
   center.appendChild(playerSlot)
   playersSlots.push(document.querySelector(`#player${i}-slot`))
   playersCardSlots.push(document.querySelector(`#player${i}-card-slot`))
   playersPiles.push(document.querySelector(`#player${i}-pile`))
+if (i != myNumber) {
+    const avatar = document.createElement("div")
+    avatar.setAttribute("id", `player${i}-avatar`)
+    avatar.classList.add("avatar","game-avatar")
+    avatar.innerText = playerNames[i]
+    playerSlot.appendChild(avatar)
+  }
 })
 
 const sitOnePlayer = (i) => {
@@ -133,14 +128,25 @@ function winnerCollects(winner) {
 }
 sock.on("winnerCollects", winnerCollects)
 
-function deal(myNum, totPlayers, names, hand, triumphSuit, startingPlayer) {
+function deal(myNum, totPlayers, names, hand, triumphSuit, startingPlayer, allBots) {
   gameWrapper.style.display = "flex";
   settingsWrapper.style.display = "none";
   resultWrapper.style.display = "none";
   myNumber = myNum
   totalPlayers = totPlayers
   playerNames = names
-  if (firstRound) {sitPlayers()}
+  areAllBots = allBots
+  if (firstRound) {
+    sitPlayers()
+    if (areAllBots) {
+        firstBotMove = true
+        if (imHost && !botTurnListener) {
+          botTurnListener = true
+          document.getElementById("table").addEventListener("click", () => {
+            sock.emit("nextTurn")})
+          }
+        } else { firstBotMove = false }
+  }
   forEachPlayer((i)=>{playersPiles[i].classList.add("empty-pile")})
   renderBunchOfCards(hand, handElement)
   triumphSuitSlot.innerText = triumphSuit
@@ -157,7 +163,7 @@ const setResultWrapper = () => {
     resultDiv.setAttribute("id", `player${i}-result`)
     resultDiv.classList.add("player-result")
     const avatar = document.createElement("div")
-    avatar.setAttribute("id", `player${i}-avatar`)
+    avatar.setAttribute("id", `player${i}-avatar-result`)
     avatar.classList.add("avatar")
     const resultPile = document.createElement("div")
     resultPile.setAttribute("id", `player${i}-result-pile`)
@@ -170,7 +176,7 @@ const setResultWrapper = () => {
     resultDiv.appendChild(count)
     resultWrapper.appendChild(resultDiv)
     resultDivs.push(document.querySelector(`#player${i}-result`))
-    avatars.push(document.querySelector(`#player${i}-avatar`))
+    avatars.push(document.querySelector(`#player${i}-avatar-result`))
     resultPiles.push(document.querySelector(`#player${i}-result-pile`))
     counts.push(document.querySelector(`#player${i}-count`))
     avatars[i].innerHTML = playerNames[i]
@@ -203,13 +209,3 @@ function roundResult([pilesForCount, finalCount]) {
   forEachPlayer(fillPlayerResultDiv, pilesForCount, finalCount)
 }
 sock.on("roundResult", roundResult)
-
-
-function error(error) {
-  if (error === "fullRoom") {
-    window.location.replace(`../index.html`);
-  } else {
-    sock.emit("serverConsoleLog", "Error parameter unknown")
-  }
-}
-sock.on("error", error)

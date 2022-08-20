@@ -27,28 +27,31 @@ function redirect(roomName) {
 }
 sock.on("redirect", redirect)
 
-function showError (msg) {
-  errorDiv.innerText = msg
-}
-
-function error (error) {
+const showError = ((error) => {
+  console.log(error)
+  let msg
   switch (error) {
-    case "fullRoom":
-      showError("Game already started")
+    // case null:
+    //   msg = ""
+    //   break
+    case "unexistingRoom":
+      msg = "Incorrect game ID"
       break
-      case "unexistingRoom":
-        showError("Incorrect game ID")   
-        break
-        case "spectatorsNotAllowed":
-          showError("This game does not allow spectators")   
-          break
-
-        default:
-        sock.emit("serverConsoleLog", "Error parameter unknown")
+    case "spectatorsNotAllowed":
+      msg = "This game does not allow spectators"
+      break
+      default:
+      sock.emit("serverConsoleLog", "Error parameter unknown")
   }
-}
-sock.on("error", error)
+  errorDiv.innerText = msg
+})
+sock.on("error", showError)
 
 
 createGame();
-joinGame(); 
+joinGame();
+
+document.addEventListener('DOMContentLoaded', (event) => {
+  const error = new URLSearchParams(window.location.search).get("error")
+  if (!!error) { showError(error) }
+})
