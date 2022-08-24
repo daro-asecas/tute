@@ -1,7 +1,7 @@
 const rules = {}
 
 rules.numbers = [1, 2, 3, 4, 5, 6, 7, 10, 11, 12]
-rules.suitOrder = ["♠", "♣", "♥", "♦"]
+rules.suitOrder = ["oro", "copa", "espada", "basto"] // for frenchCards ["♠", "♣", "♥", "♦"]
 rules.CARD_POWER_MAP = {"2": 2, "4": 4, "5": 5, "6": 6, "7": 7, "10": 10, "11": 11, "12": 12, "3": 13, "1": 14,}
 rules.CARD_VALUE_MAP = {"2": 0, "4": 0, "5": 0, "6": 0, "7": 0, "10": 2, "11": 3, "12": 4, "3": 10, "1": 11,}
 
@@ -51,7 +51,7 @@ rules.allPlayable = (hand) => { return hand.cards.map((card) => { return (true) 
 rules.roundWinner = ((cards, trickSuit, triumphSuit) => {
   let bestCard
   let winner = 0
-  let suitPower = {"♠": 0, "♣":0, "♥":0, "♦":0,}
+//  let suitPower = {"oro": 0, "copa":0, "espada":0, "basto":0,} // for frenchCards {"♠": 0, "♣":0, "♥":0, "♦":0,}
 
   suitPower[triumphSuit] = 2
   suitPower[trickSuit] = 1
@@ -75,7 +75,7 @@ rules.roundWinner = ((cards, trickSuit, triumphSuit) => {
 });
 
 rules.isWinning = ((card, bestCard, trickSuit, triumphSuit) => {
-  let suitPower = {"♠": 0, "♣":0, "♥":0, "♦":0,}
+  let suitPower = {"oro": 0, "copa":0, "espada":0, "basto":0,} // for frenchCards {"♠": 0, "♣":0, "♥":0, "♦":0,}
   suitPower[triumphSuit] = 200
   suitPower[trickSuit] = 100
 

@@ -67,21 +67,41 @@ const sitPlayers = (() => {
   gameMessageElement.style.transform = `rotate(${-angle}deg)`
 })
 
-const colorOf = (card => { return (card.suit === "♠" || card.suit === "♣") ? "black" : "red" })  // For FRENCHCARDS
+// const colorOf = (card => { return (card.suit === "♠" || card.suit === "♣") ? "black" : "red" })  // For FRENCHCARDS
 
 const getHTMLOf = ((card, index) => {
+  const cardSlot = document.createElement("div")
+  cardSlot.classList.add("hand-card-slot")
   const cardDiv = document.createElement("div")
-  cardDiv.innerText = card.suit
-  cardDiv.classList.add("card", colorOf(card))                                                 // For FRENCHCARDS
-  if (typeof (index === "number")) { cardDiv.setAttribute("id", `hand-card-${index}`) }
-  cardDiv.dataset.number = `${card.number}${card.suit}`
-  return cardDiv
+  cardDiv.classList.add("card")
+  // cardDiv.innerText = card.suit                                                                  // For FRENCHCARDS
+  const img = document.createElement("img")
+  img.classList.add("suit-symbol")
+  if (card.number == "1") {
+    img.src = `../img/${card.suit}-as.png`
+    img.classList.add(`${card.suit}-as`)
+} else {
+    img.src = `../img/${card.suit}.png`
+    if (card.suit==="espada"||card.suit==="basto") { img.classList.add("large-suit") }
+  }
+  // cardDiv.classList.add("card", colorOf(card))                                                   // For FRENCHCARDS
+  cardDiv.dataset.number = `${card.number}`                                                         // For FRENCHARDS `${card.number}${card.suit}`
+  cardDiv.appendChild(img)
+  if (!(index === false)) {
+    cardSlot.setAttribute("id", `hand-card-slot-${index}`)
+    cardDiv.setAttribute("id", `hand-card-${index}`)
+    cardSlot.appendChild(cardDiv)
+    return cardSlot
+  } else {
+    return cardDiv
+  }
 })
 
 const renderBunchOfCards = ((bunch, element) => {
   element.innerHTML = ""
   bunch.cards.forEach((card, index) => {
-    element.appendChild(getHTMLOf(card, index))
+    element.insertBefore(getHTMLOf(card, index), document.getElementById(`hand-card-slot-${index-1}`) )
+    // element.appendChild(getHTMLOf(card, index))
   })
 })
 
@@ -91,15 +111,28 @@ const renderHand = ((hand) => {
 sock.on("hand", renderHand)
 
 const makeCardPlayable = (index) => {
+  const cardSlot = document.getElementById(`hand-card-slot-${index}`)
+  cardSlot.classList.add("hand-card-slot-playable")
   const cardDiv = document.getElementById(`hand-card-${index}`)
   cardDiv.classList.add("playable")
   cardDiv.addEventListener("click", () => { sock.emit("turn", index) })
+}
+
+const makeCardNotPlayable = (index) => {
+  const cardSlot = document.getElementById(`hand-card-slot-${index}`)
+  cardSlot.classList.add("hand-card-slot-not-playable")
+  const cardDiv = document.getElementById(`hand-card-${index}`)
+  cardDiv.classList.add("not-playable")
+  const veil = document.createElement("div")
+  veil.classList.add("veil")
+  cardSlot.appendChild(veil)
 }
 
 const yourTurn = ((playableCards) => {
   gameMessage("Your Turn")
     playableCards.forEach((playable, index) => {
       if (playable) { makeCardPlayable(index) }
+      else {makeCardNotPlayable(index)}
     })
 })
 sock.on("yourTurn", yourTurn)

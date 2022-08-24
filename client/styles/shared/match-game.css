@@ -4,11 +4,13 @@
 
 #game-wrapper {
   background-color: black;
-  position:relative;
-  display:flex;
+  position: relative;
+  display: flex;
   flex-direction: column;
   justify-content: space-between;
+  align-items: center;
   user-select: none;
+  overflow-x: hidden;
 }
 
 #table {
@@ -121,8 +123,6 @@
   opacity: 0;
 }
 
-
-
 .card-slot {
   height: 4.85rem;
   width: 3rem;
@@ -140,6 +140,8 @@
   align-items: center;
   font-size: 9vmin;
   user-select: none;
+  color: black;
+  text-shadow: -1px 0 white, 0 2px white, 2px 0 white, 0 -1px white;
 }
 
 .card.red{
@@ -150,11 +152,17 @@
   color:black;
 }
 
+.card::before {
+  z-index: 1;
+}
+
 .card::before,
 .card::after {
   position: absolute;
   content: attr(data-number);
   font-size: 1rem;
+  color: black;
+  font-weight: bold;
 }
 
 .card::before {
@@ -168,6 +176,30 @@
   transform: rotate(180deg)
 }
 
+.suit-symbol {
+  max-width: 90%;
+  max-height: 50%;
+}
+  .large-suit { /* ESPADA y BASTO, except aces */
+    max-height: 70%;
+  }
+  .espada-as {
+    max-height: 90%;
+    transform: scaleX(-1);
+  }
+  .basto-as {
+    max-height: 90%;
+    transform: scaleX(-1) scaleY(1.25);
+  }
+  .oro-as {
+    max-width: 95%;
+    max-height: 90%;
+  }
+  .copa-as {
+    max-height: 90%;
+    transform: rotate(-1.5deg);
+  }
+
 #triumph-suit {
   position: absolute;
   right: 0.3rem;
@@ -179,17 +211,44 @@
 }
 
 #hand {
+  width: 99%;
   display: flex;
-  flex-direction: row-reverse;
+  flex-direction: row;
   justify-content: center;
 }
 
-#hand > .card {
+.hand-card-slot {
+  background: black;
   height: 6rem;
-  width: 3.5rem;
-  opacity: 50%;
+  max-width: 3.5rem;
+  min-width: 0.5rem;
+  border-radius: 0.5rem;
+  /* overflow: hidden; */
+  flex-shrink: 1;
+  position:relative;
 }
 
-#hand > .card.playable {
-  opacity: 100%;
+#hand > #hand-card-slot-0 {
+  flex-shrink: 0;
+}
+
+
+#hand .hand-card-slot-playable {
+  flex-shrink: 0.25;
+}
+
+#hand .card {
+  height: 6rem;
+  width: 3.5rem;
+}
+
+#hand .veil {
+  z-index: 2;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  opacity: 40%;
+  background-color: black;
 }
