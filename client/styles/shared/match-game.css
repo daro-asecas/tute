@@ -230,11 +230,13 @@
 
 #hand > #hand-card-slot-0 {
   flex-shrink: 0;
+  transition-duration: 0.5s;
 }
 
 
 #hand .hand-card-slot-playable {
   flex-shrink: 0.25;
+  transition-duration: 0.5s;
 }
 
 #hand .card {
@@ -251,4 +253,5 @@
   height: 100%;
   opacity: 40%;
   background-color: black;
+  transition-duration: 1s;
 }
