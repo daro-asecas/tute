@@ -141,7 +141,9 @@
   font-size: 9vmin;
   user-select: none;
   color: black;
-  text-shadow: -1px 0 white, 0 2px white, 2px 0 white, 0 -1px white;
+  text-shadow:  1px 1px rgb(255 255 255 / 40%),
+                2px 0px rgb(255 255 255 / 40%),
+                0px 2px rgb(255 255 255 / 40%);
 }
 
 .card.red{
@@ -197,17 +199,23 @@
   }
   .copa-as {
     max-height: 90%;
-    transform: rotate(-1.5deg);
   }
 
 #triumph-suit {
   position: absolute;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
   right: 0.3rem;
   top: 0;
   color: white;
   font-weight: bold;
   font-size: 2rem;
   text-transform: uppercase;
+}
+
+#suit-symbol {
+  width: 2.5rem;
 }
 
 #hand {

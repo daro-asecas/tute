@@ -6,17 +6,17 @@ const numberStepperInputs = document.querySelectorAll(".stepper")
 const modifyStepper = (index, modification) => {
   if (numberStepperInputs[index].innerText === "∞") {numberStepperInputs[index].innerText = 0}
   const delta = (modification==="decrement")?(-1):(1)
-  const max = numberStepperInputs[index].getAttribute('max')
-  const min = numberStepperInputs[index].getAttribute('min')
+  const max = parseInt(numberStepperInputs[index].getAttribute('max'))
+  const min = parseInt(numberStepperInputs[index].getAttribute('min'))
   let numberToReturn = parseInt(numberStepperInputs[index].innerText) + delta
-  if (numberToReturn === parseInt(max) + 1) {numberToReturn = min
-  } else if (numberToReturn === parseInt(min) - 1) {numberToReturn = max}
+  if (numberToReturn === max+1) {numberToReturn = min
+  } else if (numberToReturn === min-1) {numberToReturn = max}
   switch (index) {
     case 0:
       sock.emit("updateBotCount", numberToReturn)
     break
     case 1:      
-      if ( numberToReturn == 0) { numberToReturn = "∞" }
+      if ( numberToReturn === 0) { numberToReturn = "∞" }
       break
     }
   numberStepperInputs[index].innerText = numberToReturn

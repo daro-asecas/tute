@@ -22,9 +22,6 @@
 #game-wrapper,
 #result-wrapper {
   margin: 0;
-  /* width: 35rem;
-  height: 38rem; */
-  flex-grow: 1;
 }
 
 #game-wrapper,
@@ -41,7 +38,14 @@
   #game-wrapper,
   #result-wrapper {
     height: 100vh;
+    width: 90vh;
   }
+
+  #chat-wrapper {
+    flex-grow: 1;
+    max-width: min-content;
+  }
+
 }
 
 @media (orientation: portrait) {
@@ -61,10 +65,12 @@
   #game-wrapper,
   #result-wrapper {
     width: 100vw;
+    height: 113vw;
   }
 
   #chat-wrapper {
     height: 10rem;
+    width: 100vw;
   }
 
 }

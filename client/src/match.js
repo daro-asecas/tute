@@ -15,7 +15,7 @@ const table = document.querySelector("#table");
 const center = document.querySelector("#center");
 const handElement = document.querySelector("#hand");
 const gameMessageElement = document.querySelector("#game-message");
-const triumphSuitSlot = document.querySelector("#suit-slot");
+const triumphSuitSymbol = document.querySelector("#suit-symbol");
 
 const forEachPlayer = ((fn, ...parameters) => {
   for (let i = 0; i<totalPlayers; i++) {
@@ -75,18 +75,24 @@ const getHTMLOf = ((card, index) => {
   const cardDiv = document.createElement("div")
   cardDiv.classList.add("card")
   // cardDiv.innerText = card.suit                                                                  // For FRENCHCARDS
-  const img = document.createElement("img")
-  img.classList.add("suit-symbol")
-  if (card.number == "1") {
-    img.src = `../img/${card.suit}-as.png`
-    img.classList.add(`${card.suit}-as`)
-} else {
-    img.src = `../img/${card.suit}.png`
-    if (card.suit==="espada"||card.suit==="basto") { img.classList.add("large-suit") }
-  }
+  
+// desde aca
+  //   const img = document.createElement("img")
+  //   img.classList.add("suit-symbol")
+  //   if (card.number == "1") {
+  //     img.src = `../img/${card.suit}-as.png`
+  //     img.classList.add(`${card.suit}-as`)
+  // } else {
+  //     img.src = `../img/${card.suit}.png`
+  //     if (card.suit==="espada"||card.suit==="basto") { img.classList.add("large-suit") }
+  //   }
+// hasta aca
+
+  
+
   // cardDiv.classList.add("card", colorOf(card))                                                   // For FRENCHCARDS
   cardDiv.dataset.number = `${card.number}`                                                         // For FRENCHARDS `${card.number}${card.suit}`
-  cardDiv.appendChild(img)
+  cardDiv.appendChild(cardImg[card.suit][card.number])
   if (!(index === false)) {
     cardSlot.setAttribute("id", `hand-card-slot-${index}`)
     cardDiv.setAttribute("id", `hand-card-${index}`)
@@ -182,7 +188,7 @@ function deal(myNum, totPlayers, names, hand, triumphSuit, startingPlayer, allBo
   }
   forEachPlayer((i)=>{playersPiles[i].classList.add("empty-pile")})
   renderBunchOfCards(hand, handElement)
-  triumphSuitSlot.innerText = triumphSuit
+  triumphSuitSymbol.src =`../img/${triumphSuit}.png`
   if (startingPlayer != myNum && firstBotMove) {
     gameMessage(`You are against bots. Click to make them play`)
     firstBotMove = false
@@ -242,3 +248,23 @@ function roundResult([pilesForCount, finalCount]) {
   forEachPlayer(fillPlayerResultDiv, pilesForCount, finalCount)
 }
 sock.on("roundResult", roundResult)
+
+
+// Precarga de las imagenes de las cartas
+const cardImg = {}
+const suits = ["oro", "copa", "espada", "basto"]
+suits.forEach(suit => {
+  cardImg[suit] = [0] // 0 es la imagen de los cantos
+  for (let i=1; i<13; i++) {
+    const img = document.createElement("img")
+    img.classList.add("suit-symbol")
+    if (i == "1") {
+      img.src = `../img/${suit}-as.png`
+      img.classList.add(`${suit}-as`)
+    } else {
+      img.src = `../img/${suit}.png`
+      if (suit==="espada"||suit==="basto") { img.classList.add("large-suit") }
+    }
+    cardImg[suit].push(img)
+  }
+})

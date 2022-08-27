@@ -11,3 +11,29 @@ body {
   flex-direction: column;
   justify-content: center;
 }
+
+*::-webkit-scrollbar {
+  width: 5px;
+  opacity: 0;
+}
+
+*::-webkit-scrollbar-button {
+  display: none;
+}
+
+*::-webkit-scrollbar-thumb {
+  border-radius: 50px;
+  background: rgba(255,255,255,.4);
+}
+
+*::-webkit-scrollbar-track {
+  border-radius: 50px;
+}
+
+*::-webkit-scrollbar {
+  display: none;
+}
+
+/* *:hover::-webkit-scrollbar {
+  display:block ;
+} */

@@ -62,7 +62,11 @@ class Match {
   }
 
   get isAllowedMatchStart() {
-    if (this.botNum + this.numberOfHumanPlayers < 3 || this.botNum + this.numberOfHumanPlayers > 5 ) { return false
+
+    console.log(typeof(this.botNum))
+    console.log(typeof(this.numberOfHumanPlayers))
+    if (this.botNum + this.numberOfHumanPlayers < 3 || this.botNum + this.numberOfHumanPlayers > 5 ) { 
+      return false
     } else { return true}
   }
 
@@ -154,8 +158,6 @@ class Match {
       this.players.push(new Bot(`Bot ${i}` ))
       this.playerNames.push(`Bot ${i}`)
     }
-
-
 
     for (let i = this.players.length - 1; i > 0; i--) {
       const newIndex = Math.floor(Math.random() * (i)) + 1
@@ -258,12 +260,13 @@ class Match {
   }
 
   trickResult() {
-    messages = [`${this.playerNames[winner]} won`]
+    let winnerName = this.playerNames[winner]
+    messages = [`${winnerName} won`]
     this.sendToAllPlayers(messages)
-    this.nextTrick()
+    this.nextTrick(winnerName)
   }
 
-  async nextTrick() {
+  async nextTrick(winnerName) {
     let promise = new Promise((resolve, reject) => {
       setTimeout(() => resolve("done!"), 2000)
     });
@@ -274,7 +277,7 @@ class Match {
     this.winnerCollects()
     if (hands[0].numberOfCards) {
       this.emitYourTurn(nextPlayer, rules.allPlayable(hands[nextPlayer]))
-      messages = cards.map(function() {return `P${winner} starts`})
+      messages = cards.map(function() {return `${winnerName} starts`})
       messages[winner] = "You start"
       this.sendToAllPlayers(messages)
     } else {
