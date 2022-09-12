@@ -10,7 +10,7 @@ sock.on("message", writeEvent)
 
 const onFormSubmitted = (e) => {
   e.preventDefault();
-  const input =  document.querySelector("#chat");
+  const input =  document.querySelector("#msg");
   if (input.value) {
     const text = input.value;
     input.value = "";

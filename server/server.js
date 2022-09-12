@@ -35,7 +35,7 @@ let matches = {}
 // Cuando alguien entra
 io.on("connection", (sock) => {
   console.log("Someone in")
-  sock.emit("message", ["Welcome to TUTE-ONLINE ", "server"])
+  sock.emit("message", ["Welcome!", "server"])
 
 
   // Para crear una sala

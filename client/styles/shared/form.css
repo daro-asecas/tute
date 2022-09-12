@@ -1,10 +1,10 @@
 button, .button {
-  background-color: #00bcd4;
+  background-color: var(--form-btn-bkg-color); /*  #00bcd4; */
   color: white;
   text-transform: uppercase;
   font-size: 0.8rem;
-  padding: 3px 15px;
-  line-height: 25px;
+  padding: 0.15rem 1.2rem;
+  line-height: 1.5rem;
   border: none;
   border-radius: 2px;
   cursor: pointer;
@@ -15,7 +15,7 @@ button, .button {
 }
 
 button:hover, .button:hover {
-  background-color: #79d7e4;
+  background-color: var(--form-btn-hover-color);
 }
 
 button:active, .button:active {
@@ -38,25 +38,25 @@ button.disabled:active, .button.disabled:active {
 
 
 select {
-  background-color: #007a8a;
+  background-color: var(--form-btn-bkg-color);
+  border: solid 1px var(--form-btn-border-color);
   color: white;
-  border: solid 1px rgb(193, 239, 255);
   width: 100%;
   border-radius: 0.2rem;
   text-align: center;
   appearance: none;
   cursor: pointer;
+  height: 1.3rem;
+  font-size: 1rem;
+}
+
+option {
+  height: 1rem;
 }
 
 select:focus {
-  border: solid 2px rgb(193, 239, 255);
+  border: solid 2px var(--form-btn-border-color);
   outline: none;
-}
-
-input {
-  border: solid 1px lightgray;
-  font-size: 1.0rem;
-  text-align: center;
 }
 
 ::-webkit-input-placeholder {
@@ -166,8 +166,10 @@ input[type="checkbox"].toggle:disabled + label::after {
   font-family: monospace;
   cursor: pointer;
   color: white;
-  background-color: #007a8a;
-  border: solid 2px rgb(193, 239, 255);
+  background-color: var(--form-btn-bkg-color);
+  border: solid 0.08rem var(--form-btn-border-color);
+  border-left-width: 0.16rem;
+  border-right-width: 0.16rem;
   height: 1.2rem;
   width: 2.4rem;
   margin-inline: -1rem;
@@ -187,9 +189,32 @@ input[type="checkbox"].toggle:disabled + label::after {
 }
 
 .stepper-input-modifiers:hover {
-  background-color: #79d7e4;
+  background-color: var(--form-btn-hover-color);
 }
 
 .stepper-input-modifiers:active {
   transform: scale(0.44, 0.88);
+}
+
+#expand-match-details-button {
+  font-family: monospace;
+  cursor: pointer;
+  color: white;
+  background-color: var(--form-btn-bkg-color);
+  border: solid 0.08rem var(--form-btn-border-color);
+  border-left-width: 0.16rem;
+  border-right-width: 0.16rem;
+  height: 1.2rem;
+  width: 2.4rem;
+  margin-inline: -1rem;
+  transform: scaley(0.5) rotate(90deg);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-content: center;
+  align-items: center; 
+}
+
+#expand-match-details-button.expanded {
+  transform: rotate(180);
 }

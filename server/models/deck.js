@@ -6,6 +6,7 @@ const NUMBERS = rules.numbers
 // const NUMBERS = ["1", "3", "7", "10", "11", "12"] // esto es para que termine rapido, eliminar luego
 // const NUMBERS = ["1"] // esto es para que termine aun mas rapido, eliminar luego
 // const NUMBERS = ["1", "1", "1", "3", "3", "3"] // esto es para probar los simbolos de los palos españoles
+// const NUMBERS = ["11", "12"] // esto es para probar los cantos
 
 class Deck {
   constructor(cards = freshDeck()) {
@@ -19,7 +20,8 @@ class Deck {
   onlyCardsWithValue(triumphSuit) {
     let result = new Deck([])
     this.cards.forEach(card => {
-      if(card.value>0) { result.push(card) }})
+      if(card.value>0) { result.push(card) }
+    })
     result.sort(triumphSuit)
     return result
   }

@@ -2,6 +2,7 @@ const Deck = require("./deck.js")
 const Bot = require("./bot.js")
 const rules = require("./rules.js")
 const matches = require("../server.js")
+const { isThereAChant } = require("./rules.js")
 
 let hands = []
 let piles = []
@@ -9,7 +10,6 @@ let pilesForCount = []
 let finalCount = []
 let cards = []
 let messages = []
-let chants = [false, false, false, false]
 let lastRoundWinner
 let startingPlayer, winner, trickSuit, currentBest, triumphSuit, nextPlayer, turns
 
@@ -42,7 +42,7 @@ class Match {
     this.host.on("startMatch", () => { this.startMatch() })
     // this.host.on("startMatch", this.startMatch)         // no se por que esta no funciono
     this.host.on("nextRound", () => { this.startGame() })
-    // this.host.on("nextRound", this.startGame)
+    // this.host.on("nextRound", this.startGame)           // no se por que esta no funciono
   }
 
   get numberOfPlayers() { 
@@ -62,9 +62,6 @@ class Match {
   }
 
   get isAllowedMatchStart() {
-
-    console.log(typeof(this.botNum))
-    console.log(typeof(this.numberOfHumanPlayers))
     if (this.botNum + this.numberOfHumanPlayers < 3 || this.botNum + this.numberOfHumanPlayers > 5 ) { 
       return false
     } else { return true}
@@ -95,7 +92,7 @@ class Match {
 
   emitEventToAllPlayers(event, ...parameters) {
     const playersArray = (this.isGameStarted)?this.players:this.humanPlayers
-    playersArray.forEach((player) => {
+    playersArray.forEach((player, index) => {
       player.emit(event, parameters)
     });
   };
@@ -196,6 +193,16 @@ class Match {
       }
     })
 
+    this.players.forEach((player, index) => {                  // listener de "chantInHandMade"
+        player.on("chantInHandMade", (suit) => {
+          const isThereAChant = rules.isThereAChant(hands[index].cards)
+          if (isThereAChant.chants[suit] && this.chants[suit]===undefined) {
+            this.emitChant(suit, index)
+          }
+        })
+      
+    })
+
     startingPlayer = Math.floor(Math.random() * this.numberOfPlayers)
     triumphSuit = rules.suitOrder[3]
     
@@ -208,6 +215,7 @@ class Match {
     triumphSuit = rules.nextSuit(triumphSuit)
     startingPlayer = (startingPlayer + 1) % this.numberOfPlayers
     nextPlayer = startingPlayer
+    this.chants = {}
     turns = 0
     const deck = new Deck()
     deck.shuffle()
@@ -248,6 +256,7 @@ class Match {
   emitYourTurn(nextPlayer, playableCards) {
     if(this.areAllBots && this.players[nextPlayer] instanceof Bot) {
       let isListenerActive = true
+      this.host.emit("activatePlayButton")
       this.host.on("nextTurn", () => {
           if (isListenerActive) {
             isListenerActive = false
@@ -257,6 +266,7 @@ class Match {
     } else {
       this.players[nextPlayer].emit("yourTurn", playableCards)
     }
+    this.emitEventToAllPlayers("turnOfPlayer", nextPlayer)
   }
 
   trickResult() {
@@ -286,9 +296,36 @@ class Match {
     }
   }
 
+  emitChant(suit, playerIndex) {
+    this.chants[suit] = playerIndex
+    let isDouble = suit===triumphSuit
+    this.emitEventToAllPlayers("chant", playerIndex, suit, isDouble)
+  }
+
+
   winnerCollects() {
+    const chantsInTable = rules.isThereAChant(cards)
+    if (chantsInTable.isThere) {
+      Object.entries(chantsInTable.chants).forEach(([key, value]) => {
+        if (value) {
+        this.emitChant(key, winner)
+        }
+      })
+    }
+
     piles[winner].join(cards)
     this.emitEventToAllPlayers("winnerCollects", winner)
+    
+    const chantsInHand = rules.isThereAChant(hands[winner].cards)
+    if (chantsInHand.isThere) {
+      Object.entries(chantsInHand.chants).forEach(([key, value]) => {
+        if (value && this.chants[key]===undefined) {
+          const chantSuit = key
+          this.players[winner].emit("chantOption", chantSuit)
+        }
+      })
+    }
+
   }
 
   endRound() {

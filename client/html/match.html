@@ -17,114 +17,155 @@
 <body>
   <div id="match-wrapper">
 
+    
     <div id="settings-wrapper">
+      <div id="settings-wrapper-except-startbutton">
 
-      <div id="players-wrapper">
-        <h2>Players</h2>
-        <a id="invite-btn" class="button" data-action="share/whatsapp/share">WhatsApp Invite</a>
-          <div id="bot-count-li" class="im-not-host">
-            <div>Bots</div>
-            <div class="number-stepper-input">
-              <span class="stepper-input-modifiers decrement">&#60;</span>
-              <div id="bot-count" class="stepper" min="0" max="4">0</div>
-              <span class="stepper-input-modifiers increment">&#62;</span>
-            </div>
-          </div>
-        <ul id="players-list"></ul>
-      </div>
-
-      <div id="all-settings" class="im-not-host">
-        <h2>Settings</h2>
-        <h4 style="text-align: justify;">The game is for 3 to 5 players, mixing humans and bots.
-        <br>The game is an infinite match with no looser count.</h4>
-
-        <!-- <ul id="settings">
-
-        </ul> -->
-
-        <div>
-          <h2>Coming soon</h2>
-          <h4>We are working in this settings.</h4>
-          <ul id="coming-soon-settings">
-
-          <li>
-            <div class="option-name">Allow Spectators</div>
-            <div class="info">Turn on to allow other users to join and watch once the game started.<br>Spectators can't see players hands.</div>
-            <div class="input-div">
-              <input id="allow-spectators" type="checkbox" class="toggle settings-modifier" checked/>
-              <label for="allow-spectators" class="toggle-label"></label>
-            </div>
-          </li>
-          <li>
-            <div class="option-name">Point Limit</div>
-            <div class="info">Point limit in the game (∞ = unlimited)</div>
-            <div class="input-div">
+        <div id="players-wrapper">
+          <h2>Players</h2>
+          <a id="invite-btn" class="button" data-action="share/whatsapp/share" target="_blank">WhatsApp Invite</a>
+            <div id="bot-count-li" class="im-not-host">
+              <div>Bots</div>
               <div class="number-stepper-input">
-                <span class="stepper-input-modifiers decrement settings-modifier">&#60;</span>
-                <div id="point-limit" class="stepper" min="0" max="9">4</div>
-                <span class="stepper-input-modifiers increment settings-modifier">&#62;</span>
+                <span class="stepper-input-modifiers decrement">&#60;</span>
+                <div id="bot-count" class="stepper" min="0" max="4">0</div>
+                <span class="stepper-input-modifiers increment">&#62;</span>
               </div>
             </div>
-          </li>
-          <li>
-            <div class="option-name">Hand Loses Double</div>
-            <div class="info">If hand player loses, it counts double</div>
-            <div class="input-div">
-              <input id="hand-loses-double" type="checkbox" class="toggle settings-modifier">
-              <label for="hand-loses-double" class="toggle-label"></label>
-            </div>
-          </li>
-          <li>
-            <div class="option-name">Allow Redeal</div>
-            <div class="info">Hand can ask for redeal, losing only 1 point</div>
-            <div class="input-div">
-              <input id="redeal" type="checkbox" class="toggle settings-modifier" disabled>
-              <label for="redeal" class="toggle-label"></label>
-            </div>
-          </li>
-          <!-- <ul id="coming-soon-settings"> -->
+          <ul id="players-list"></ul>
+        </div>
+
+        <div id="all-settings" class="im-not-host">
+          <h2>Settings</h2>
+          <h4 style="text-align: justify;">The game is for 3 to 5 players, mixing humans and bots.
+          <br>The game is an infinite match with no loser count.</h4>
+
+          <!-- <ul id="settings">
+
+          </ul> -->
+
+          <div>
+            <h2>Coming soon</h2>
+            <h4>We are working in this settings.</h4>
+            <ul id="coming-soon-settings">
+
             <li>
-              <div class="option-name">Players Limit</div>
-              <div class="info">Max number of players in each round.<br>If there are more players, you will wait by turns.</div>
+              <div class="option-name">Allow Spectators</div>
+              <div class="info">Turn on to allow other users to join and watch once the game started.<br>Spectators can't see players hands.</div>
+              <div class="input-div">
+                <input id="allow-spectators" type="checkbox" class="toggle settings-modifier" checked/>
+                <label for="allow-spectators" class="toggle-label"></label>
+              </div>
+            </li>
+            <li>
+              <div class="option-name">Point Limit</div>
+              <div class="info">Point limit in the game (∞ = unlimited)</div>
               <div class="input-div">
                 <div class="number-stepper-input">
                   <span class="stepper-input-modifiers decrement settings-modifier">&#60;</span>
-                  <div id="players-limit" class="stepper" min="3" max="8">5</div>
+                  <div id="point-limit" class="stepper" min="0" max="9">4</div>
                   <span class="stepper-input-modifiers increment settings-modifier">&#62;</span>
                 </div>
               </div>
             </li>
             <li>
-              <div class="option-name">Hitch</div>
-              <div class="info">When a player loses, he/she can come back to play, with the highest point count of the other players</div>
+              <div class="option-name">Hand Loses x2</div>
+              <div class="info">If hand player loses, it counts double</div>
               <div class="input-div">
-                <select id="hitch" class="list settings-modifier">
-                  <option value="always">Always</option>
-                  <option value="optional">Optional</option>
-                  <option selected="selected" value="no">No</option>
+                <input id="hand-loses-double" type="checkbox" class="toggle settings-modifier">
+                <label for="hand-loses-double" class="toggle-label"></label>
+              </div>
+            </li>
+            <li>
+              <div class="option-name">Allow Redeal</div>
+              <div class="info">Hand can ask for redeal, losing only 1 point</div>
+              <div class="input-div">
+                <input id="redeal" type="checkbox" class="toggle settings-modifier" disabled>
+                <label for="redeal" class="toggle-label"></label>
+              </div>
+            </li>
+            <!-- <ul id="coming-soon-settings"> -->
+              <li>
+                <div class="option-name">Players Limit</div>
+                <div class="info">Max number of players in each round.<br>If there are more players, you will wait by turns.</div>
+                <div class="input-div">
+                  <div class="number-stepper-input">
+                    <span class="stepper-input-modifiers decrement settings-modifier">&#60;</span>
+                    <div id="players-limit" class="stepper" min="3" max="8">5</div>
+                    <span class="stepper-input-modifiers increment settings-modifier">&#62;</span>
+                  </div>
+                </div>
+              </li>
+              <li>
+                <div class="option-name">Hitch</div>
+                <div class="info">When a player loses, he/she can come back to play, with the highest point count of the other players</div>
+                <div class="input-div">
+                  <select id="hitch" class="list settings-modifier">
+                    <option value="always">Always</option>
+                    <option value="optional">Optional</option>
+                    <option selected="selected" value="no">No</option>
+                  </select>
+                </div>
+            </li>
+            <li>
+              <div class="option-name">Round Loser</div>
+              <div class="info">Set the condition to lose the round</div>
+              <div class="input-div">
+                <select id="round-loser" class="list settings-modifier">
+                  <option selected="selected" value="second">Second</option>
+                  <option value="third">Third</option>
+                  <option value="second-and-third">Second & Third</option>
+                  <option value="any-trick">All trick winners</option>
                 </select>
               </div>
-          </li>
-          <li>
-            <div class="option-name">Round Loser</div>
-            <div class="info">Set the condition to lose the round</div>
-            <div class="input-div">
-              <select id="round-loser" class="list settings-modifier">
-                <option selected="selected" value="second">Second</option>
-                <option value="third">Third</option>
-                <option value="second-and-third">Second & Third</option>
-                <option value="any-trick">All trick winners</option>
-              </select>
-            </div>
-          </li>
-        </ul>
+            </li>
+          </ul>
+          </div>
         </div>
+
       </div>
-
-
     </div>
 
     <div id="game-wrapper">
+      <div id="game-button-container">
+
+        <div id="btn-play" class="game-button-slot">
+          <div class="game-button-border"></div>
+          <div class="game-button game-button-play">Play!</div>
+        </div>
+
+        <div id="btn-chant-oro" class="game-button-slot">
+          <div class="game-button-border"></div>
+          <div class="game-button game-button-chant">
+            <span class="chant-text"></span>
+            <img class="chant-symbol" src="../img/oro.png">
+          </div>
+        </div>
+
+        <div id="btn-chant-copa" class="game-button-slot">
+          <div class="game-button-border"></div>
+          <div class="game-button game-button-chant">
+            <span class="chant-text"></span>
+            <img class="chant-symbol" src="../img/copa.png">
+          </div>
+        </div>
+
+        <div id="btn-chant-espada" class="game-button-slot">
+          <div class="game-button-border"></div>
+          <div class="game-button game-button-chant">
+            <span class="chant-text"></span>
+            <img class="chant-symbol" src="../img/espada.png">
+          </div>
+        </div>
+
+        <div id="btn-chant-basto" class="game-button-slot">
+          <div class="game-button-border"></div>
+          <div class="game-button game-button-chant">
+            <span class="chant-text"></span>
+            <img class="chant-symbol" src="../img/basto.png">
+          </div>
+        </div>
+      </div>
       <div id="table">
         <div id="game-message"></div>
         <div id="center"></div>
@@ -137,12 +178,19 @@
     </div>
 
     <div id="chat-wrapper">
-      <div id="pannel-title">Tute-online</div>
-      <ul id="messages"></ul>
-      <form id="chat-form">
-        <input id="chat" autocomplete="off" placeholder="Type a message" title="chat" />
-        <button id="send">Send</button>
-      </form>
+      <div id="match-details">Chat
+        <!-- <span id="expand-match-details-button">&#62;</span> -->
+      </div>
+      
+      <div id="chat">
+        <ul id="messages">
+        </ul>
+
+          <form id="chat-form">
+            <input id="msg" autocomplete="off" placeholder="Type a message" title="msg" />
+            <button id="send">Send</button>
+          </form>
+        </div>
     </div>
 
   </div>

@@ -1,4 +1,5 @@
 @import "./form.css";
+@import "./variables.css";
 
 #new-game-wrapper {
   height: 100vh;

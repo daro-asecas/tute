@@ -1,10 +1,12 @@
+@import "./variables.css";
+
 * {
   box-sizing: border-box;
 }
 
 body {
   font-family: "Helvetica Neue", sans-serif;
-  background-color: rgb(10, 10, 10);
+  background-image: var(--bkg-color);
   margin: 0;
   padding: 0;
   display: flex;

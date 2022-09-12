@@ -21,14 +21,13 @@ class Bot {
 
     }
 
-    // on(event, parameters) {
-    //   switch (event) {
-    //     case "turn": // parameters = cardIndex  (vector T o F para cada carta)
-    //     break
-    //     default:
-      // }
-      // }
-    // }
+    on(event, parameters) {
+      switch (event) {
+        case "chantInHandMade": // parameters = cardIndex  (vector T o F para cada carta)
+        break
+        default:
+      }
+    }
 
 
 }

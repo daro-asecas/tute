@@ -1,0 +1,30 @@
+:root {
+
+/* Colors */
+
+  /* --bkg-color: black; */
+  --bkg-color: linear-gradient(rgb(46, 42, 36), rgb(22, 21, 18) 116px);
+
+  /* --first-container-bkg-color: hsl(0, 0%, 29%); */
+  --first-container-bkg-color: #262421;
+  --item-bkg-color: black;
+  --border-color: #404040;
+  --font-color: white;
+  --secondary-font-color: lightgray;
+
+  --form-btn-bkg-color: hsl(187, 100%, 27%);
+  --form-btn-hover-color: hsl(187, 100%, 67%);
+  --form-btn-border-color: hsl(187, 100%, 87%);
+  /* --form-btn-border-color: #79d7e4; */
+
+/* Borders */
+  --border-thickness-first-container: 0px;
+
+/* Corners */
+  --first-container-border-radius: 0.15rem;
+  --item-border-radius: 0.3rem;
+
+  /* Padding */
+  --containers-gap: 1.5rem;
+
+}

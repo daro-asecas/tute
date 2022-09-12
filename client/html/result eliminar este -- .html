@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tute</title>
+  <link rel="stylesheet" href="../styles/main.css">
+  <link rel="stylesheet" href="../styles/shared/match.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/4.5.1/socket.io.js" defer></script>
+  <!-- <script src="../src/match.js" defer></script> -->
+</head>
+
+<body>
+
+
+
+  <div id="match-wrapper">
+
+
+
+    <div id="result-wrapper" style="display: flex;">
+
+
+
+      <div id="player0-result" class="player-result">
+
+        <div class="avatar-and-count">
+          <div id="player0-avatar-result" class="result-avatar">Player 1</div>
+          <div id="player0-count" class="count">9</div>
+        </div>
+
+
+        <div id="player0-result-pile" class="result-pile">
+          <div class="result-card-slot" id="result-card-slot-0">
+            <div class="card" data-number="12" id="result-card-0"><img class="suit-symbol" src="../img/oro.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-1">
+            <div class="card" data-number="11" id="result-card-1"><img class="suit-symbol" src="../img/oro.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-2">
+            <div class="card" data-number="10" id="result-card-2"><img class="suit-symbol" src="../img/oro.png"></div>
+          </div>
+        </div>
+
+      </div>
+
+      <div id="player0-result" class="player-result loser">
+
+        <!-- <div class="border"></div> -->
+        
+        <div class="avatar-and-count">
+          <div id="player0-avatar-result" class="result-avatar">Player 1</div>
+          <div id="player0-count" class="count">9</div>
+        </div>
+
+        <div id="player0-result-pile" class="result-pile">
+          <div class="result-card-slot" id="result-card-slot-0">
+            <div class="card" data-number="12" id="result-card-0"><img class="suit-symbol" src="../img/oro.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-1">
+            <div class="card" data-number="11" id="result-card-1"><img class="suit-symbol" src="../img/oro.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-2">
+            <div class="card" data-number="10" id="result-card-2"><img class="suit-symbol" src="../img/oro.png"></div>
+          </div>
+        </div>
+
+      </div>
+
+
+
+      <div id="player1-result" class="player-result">
+
+        <div class="avatar-and-count">
+          <div id="player1-avatar-result" class="result-avatar">Bot 2</div>
+          <div id="player1-count" class="count">120</div>
+        </div>
+
+
+        <div id="player1-result-pile" class="result-pile">
+          <div class="result-card-slot" id="result-card-slot-1">
+            <div class="card" data-number="3" id="result-card-0"><img class="suit-symbol copa-as"
+                src="../img/copa-as.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-1">
+            <div class="card" data-number="12" id="result-card-1"><img class="suit-symbol" src="../img/copa.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-2">
+            <div class="card" data-number="1" id="result-card-2"><img class="suit-symbol espada-as"
+                src="../img/espada-as.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-3">
+            <div class="card" data-number="11" id="result-card-3"><img class="suit-symbol large-suit"
+                src="../img/espada.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-4">
+            <div class="card" data-number="1" id="result-card-4"><img class="suit-symbol basto-as"
+                src="../img/basto-as.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-5">
+            <div class="card" data-number="3" id="result-card-5"><img class="suit-symbol large-suit"
+                src="../img/basto.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-6">
+            <div class="card" data-number="11" id="result-card-6"><img class="suit-symbol large-suit"
+                src="../img/basto.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-7">
+            <div class="card" data-number="10" id="result-card-7"><img class="suit-symbol large-suit"
+                src="../img/basto.png"></div>
+          </div>
+          
+          <div class="result-card-slot" id="result-card-slot-7">
+            <div class="card" data-number="10" id="result-card-7"><img class="suit-symbol large-suit"
+                src="../img/basto.png"></div>
+          </div>
+
+          <div class="result-card-slot" id="result-card-slot-7">
+            <div class="card" data-number="10" id="result-card-7"><img class="suit-symbol large-suit"
+                src="../img/basto.png"></div>
+          </div>
+
+          <div class="result-card-slot" id="result-card-slot-7">
+            <div class="card" data-number="10" id="result-card-7"><img class="suit-symbol large-suit"
+                src="../img/basto.png"></div>
+          </div>
+
+          <div class="result-card-slot" id="result-card-slot-7">
+            <div class="card" data-number="10" id="result-card-7"><img class="suit-symbol large-suit"
+                src="../img/basto.png"></div>
+          </div>
+
+          <div class="result-card-slot" id="result-card-slot-7">
+            <div class="card" data-number="10" id="result-card-7"><img class="suit-symbol large-suit"
+                src="../img/basto.png"></div>
+          </div>
+
+          <div class="result-card-slot" id="result-card-slot-7">
+            <div class="card" data-number="10" id="result-card-7"><img class="suit-symbol large-suit"
+                src="../img/basto.png"></div>
+          </div>
+
+          <div class="result-card-slot" id="result-card-slot-7">
+            <div class="card" data-number="10" id="result-card-7"><img class="suit-symbol large-suit"
+                src="../img/basto.png"></div>
+          </div>
+
+          <div class="result-card-slot" id="result-card-slot-7">
+            <div class="card" data-number="10" id="result-card-7"><img class="suit-symbol large-suit"
+                src="../img/basto.png"></div>
+          </div>
+
+          <div class="result-card-slot" id="result-card-slot-7">
+            <div class="card" data-number="10" id="result-card-7"><img class="suit-symbol large-suit"
+                src="../img/basto.png"></div>
+          </div>
+
+          <div class="result-card-slot" id="result-card-slot-7">
+            <div class="card" data-number="10" id="result-card-7"><img class="suit-symbol large-suit"
+                src="../img/basto.png"></div>
+          </div>
+
+          <div class="result-card-slot" id="result-card-slot-7">
+            <div class="card" data-number="10" id="result-card-7"><img class="suit-symbol large-suit"
+                src="../img/basto.png"></div>
+          </div>
+
+          <div class="result-card-slot" id="result-card-slot-0">
+            <div class="card" data-number="1" id="result-card-0"><img class="suit-symbol large-suit"
+                src="../img/basto.png"></div>
+          </div>
+
+          <div class="result-card-slot" id="result-card-slot-0">
+            <div class="card card-of-extras" id="result-card-7">
+              <p>+10-<span>Last</span></p>
+              <p>+20-B</p>
+              <p>+40: E</p><p>+40: E</p><p>+40: E</p>
+            </div>            
+          </div>
+
+        </div>
+      </div>
+      
+
+
+      <div id="player2-result" class="player-result">
+
+
+        <div class="avatar-and-count">
+          <div id="player1-avatar-result" class="result-avatar">Bot 1</div>
+          <div id="player1-count" class="count">42</div>
+        </div>
+
+        
+        <div id="player2-result-pile" class="result-pile">
+
+          <div class="result-card-slot" id="result-card-slot-1">
+            <div class="card" data-number="3" id="result-card-1"><img class="suit-symbol" src="../img/oro.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-2">
+            <div class="card" data-number="3" id="result-card-2"><img class="suit-symbol" src="../img/copa.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-3">
+            <div class="card" data-number="11" id="result-card-3"><img class="suit-symbol" src="../img/copa.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-4">
+            <div class="card" data-number="10" id="result-card-4"><img class="suit-symbol" src="../img/copa.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-5">
+            <div class="card" data-number="3" id="result-card-5"><img class="suit-symbol large-suit"
+                src="../img/espada.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-6">
+            <div class="card" data-number="12" id="result-card-6"><img class="suit-symbol large-suit"
+                src="../img/espada.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-7">
+            <div class="card" data-number="10" id="result-card-7"><img class="suit-symbol large-suit"
+                src="../img/espada.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-0">
+            <div class="card" data-number="1" id="result-card-0"><img class="suit-symbol oro-as"
+                src="../img/oro-as.png"></div>
+          </div>
+        </div>
+      </div>
+
+
+      <div id="player0-result" class="player-result">
+
+        <div class="avatar-and-count">
+          <div id="player0-avatar-result" class="result-avatar">Player 1</div>
+          <div id="player0-count" class="count">9</div>
+        </div>
+
+        <div id="player0-result-pile" class="result-pile">
+          <div class="result-card-slot" id="result-card-slot-0">
+            <div class="card" data-number="12" id="result-card-0"><img class="suit-symbol" src="../img/oro.png"></div>
+          </div>
+          <div class="result-card-slot" id="result-card-slot-1">
+            <div class="card" data-number="11" id="result-card-1"><img class="suit-symbol" src="../img/oro.png"></div>
+          </div>
+        </div>
+
+      </div>
+      
+      
+      
+
+      <button id="next-round-button" class="button">Next Round</button>
+    </div>
+
+
+
+
+
+
+    <div id="chat-wrapper">
+      <div id="pannel-title">Tute-online</div>
+      <ul id="messages">
+        <li class="server">Welcome to TUTE-ONLINE </li>
+        <li class="server">Match starts</li>
+      </ul>
+      <form id="chat-form">
+        <input id="chat" autocomplete="off" placeholder="Type a message" title="chat">
+        <button id="send">Send</button>
+      </form>
+    </div>
+
+  </div>
+
+
+
+
+</body>
+
+</html>

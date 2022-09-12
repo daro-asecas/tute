@@ -2,6 +2,7 @@ const rules = {}
 
 rules.numbers = [1, 2, 3, 4, 5, 6, 7, 10, 11, 12]
 rules.suitOrder = ["oro", "copa", "espada", "basto"] // for frenchCards ["♠", "♣", "♥", "♦"]
+rules.SUIT_NUMBER_MAP = {"oro": 0, "copa": 1, "espada": 2, "basto": 3}
 rules.CARD_POWER_MAP = {"2": 2, "4": 4, "5": 5, "6": 6, "7": 7, "10": 10, "11": 11, "12": 12, "3": 13, "1": 14,}
 rules.CARD_VALUE_MAP = {"2": 0, "4": 0, "5": 0, "6": 0, "7": 0, "10": 2, "11": 3, "12": 4, "3": 10, "1": 11,}
 
@@ -81,5 +82,21 @@ rules.isWinning = ((card, bestCard, trickSuit, triumphSuit) => {
 
   return card.absolutePower(suitPower)>bestCard.absolutePower(suitPower)?true:false
 });
+
+rules.isThereAChant = ((bunchOfCards) => {
+  const isThereAChant = { "isThere": false}
+  isThereAChant.chants = { "oro": false, "copa": false, "espada": false, "basto": false }
+  const elevens = { "oro": false, "copa": false, "espada": false, "basto": false }
+  bunchOfCards.forEach(card => {
+    if (card.number == 11) { elevens[card.suit] = true}
+  })
+  bunchOfCards.forEach(card => {
+    if (card.number == 12 && elevens[card.suit]) {
+      isThereAChant.chants[card.suit] = true
+      isThereAChant.isThere = true
+    }
+  })
+  return isThereAChant
+})
 
 module.exports = rules
