@@ -17,6 +17,9 @@ if (!(localStorage.userId)) {
 //   localStorage.setItem("userName",userName);
 // }
 
-window.addEventListener("beforeunload", function () {
-  sock.emit("closingTab")
-});
+
+
+
+// window.addEventListener("beforeunload", function () {
+//   sock.emit("closingTab")
+// });

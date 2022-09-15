@@ -76,6 +76,8 @@ io.on("connection", (sock) => {
   // Para iniciar el juego <(<( en este punto se JOINEA a la ROOM de SOCKETIO )>)>
   sock.on("joinGame", (gameId, userId) => {
     let roomName = gameId
+    console.log("eeee")
+
 
     // Si el usuario ya pertenecia al juego (actualiza la pagina por ejemplo) 
     if (roomName in matches && matches[roomName].wasAlreadyIn(userId)) {
@@ -87,6 +89,8 @@ io.on("connection", (sock) => {
       console.log("spectatorsNotAllowed")  
       sock.emit("error", "spectatorsNotAllowed")
     } else {
+
+      console.log("else")
 
 
       // Si es el primero de la sala, la crea
@@ -110,7 +114,7 @@ io.on("connection", (sock) => {
     }
   })
 
-  sock.on("disconnect")
+  sock.on("disconnect", () => {})
 
 
   // Para el chat

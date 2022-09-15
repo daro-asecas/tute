@@ -156,6 +156,7 @@ class Match {
   }
 
   joinRoom(sock, id) {
+    console.log("entra aca")
     sock.to(this.room).emit("message", ["Someone joined", "server"])
     this.humanPlayers.push(sock)
     this.humanPlayersId.push(id)
