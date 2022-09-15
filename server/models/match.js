@@ -10,16 +10,16 @@ let pilesForCount = []
 let finalCount = []
 let cards = []
 let messages = []
-let lastRoundWinner
 let startingPlayer, winner, trickSuit, currentBest, triumphSuit, nextPlayer, turns
 
 class Match {
-  constructor(room, host) {
+  constructor(room, host, hostId) {
     console.log("Room created")
     this.botNum = 0
     this.room = room
     this.host = host
     this.humanPlayers = []
+    this.humanPlayersId = []
     this.players = []
     this.playerNames = []
     this.settings = {
@@ -34,7 +34,7 @@ class Match {
     this.isGameStarted = false
 
     this.host.emit("youAreHost")
-    this.joinRoom(host)
+    this.joinRoom(host, hostId)
 
     this.host.on("updateBotCount", (number) => { this.updateBotCountFromHost(number) })
     this.host.on("updateSettingsFromHost", (key, value) => { this.updateSettingsFromHost(key, value) })
@@ -129,9 +129,36 @@ class Match {
     this.emitEventToAllPlayersButHost("updateSingleSettingFromServer", key, value)
   }
 
-  joinRoom(sock) {
+  wasAlreadyIn(id) {
+    let was = false
+    this.humanPlayersId.forEach(playerId => {
+      if (playerId===id) { was = true }
+    })
+    return was  
+  }
+
+  reJoinRoom(sock, id) {
+    // sock.to(this.room).emit("message", ["Someone joined", "server"])
+    console.log(this.humanPlayersId, "array de IDs")
+    console.log(id, "ID del que entra")
+    console.log(this.humanPlayersId.indexOf(id), "index")
+    console.log(this.humanPlayers[this.humanPlayersId.indexOf(id)].id, "sock.id previo del que entra")
+    console.log(this.host.id, "sock.id del host")
+    console.log(this.host.id===this.humanPlayers[this.humanPlayersId.indexOf(id)].id, "ToF")
+    console.log(this.humanPlayers[this.humanPlayersId.indexOf(id)].id, "ToF")
+    if(this.host===this.humanPlayers[this.humanPlayersId.indexOf(id)]) {
+      console.log("entra en el if")
+      this.host = sock
+      this.host.emit("youAreHost")
+    }
+    this.humanPlayers[this.humanPlayersId.indexOf(id)] = sock
+    this.updateSettingsScreen()
+  }
+
+  joinRoom(sock, id) {
     sock.to(this.room).emit("message", ["Someone joined", "server"])
     this.humanPlayers.push(sock)
+    this.humanPlayersId.push(id)
     this.updateSettingsScreen()
   }
 
@@ -222,7 +249,11 @@ class Match {
     hands = deck.deal(this.numberOfPlayers)
     hands.forEach((hand) => {hand.sort(triumphSuit)})
 
-    piles = this.players.map(function() {return new Deck([])})
+    piles = this.players.map(function() {
+      const pile = new Deck([])
+      pile.extras = {}
+      return pile
+    })
 
     this.players.forEach((player, index) => {
       player.emit("deal", index, this.numberOfPlayers, this.playerNames, hands[index], triumphSuit, startingPlayer, this.areAllBots)
@@ -291,13 +322,17 @@ class Match {
       messages[winner] = "You start"
       this.sendToAllPlayers(messages)
     } else {
-      lastRoundWinner = winner
+      piles[winner].extras.lastRound = 10
       this.endRound()
     }
   }
 
   emitChant(suit, playerIndex) {
     this.chants[suit] = playerIndex
+    if (suit===triumphSuit) { piles[playerIndex].extras[suit] = 40
+    } else { piles[playerIndex].extras[suit] = 20 }
+    console.log(piles[playerIndex].extras)
+    console.log(piles[playerIndex].extras[suit])
     let isDouble = suit===triumphSuit
     this.emitEventToAllPlayers("chant", playerIndex, suit, isDouble)
   }
@@ -331,6 +366,11 @@ class Match {
   endRound() {
     pilesForCount = piles.map(function(pile) {return pile.onlyCardsWithValue(triumphSuit)})
     finalCount = pilesForCount.map(function(pile) {return pile.finalCount})
+    // this.countChant("oro")
+    // this.countChant("copa")
+    // this.countChant("espada")
+    // this.countChant("basto")
+    // this.countChant("lastRound")
     this.emitEventToAllPlayers("roundResult", pilesForCount, finalCount)
   }
 

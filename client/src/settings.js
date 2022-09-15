@@ -149,7 +149,9 @@ sock.on("updateMatchStartButton", updateMatchStartButton)
 
 document.addEventListener('DOMContentLoaded', (event) => {
   const match = new URLSearchParams(window.location.search).get("match");
-  sock.emit("joinGame", match)
+  let userId = 0
+  if (localStorage.userId) { userId = localStorage.userId }
+  sock.emit("joinGame", match, userId)
 })
 
 

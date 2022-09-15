@@ -291,6 +291,7 @@ const setResultWrapper = () => {
     const resultAvatar = document.createElement("div")
     resultAvatar.setAttribute("id", `player${i}-avatar-result`)
     resultAvatar.classList.add("result-avatar")
+    resultAvatar.innerText = playerNames[i]
     const resultPile = document.createElement("div")
     resultPile.setAttribute("id", `player${i}-result-pile`)
     resultPile.classList.add("result-pile")

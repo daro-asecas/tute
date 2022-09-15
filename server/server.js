@@ -1,5 +1,5 @@
 const Match = require("./models/match");
-const Room = require("./models/room");
+// const Room = require("./models/room");
 
 const http = require("http");
 const express = require("express");
@@ -12,15 +12,16 @@ const server = http.createServer(app);
 
 const ID_LENGTH = 5;
 const CHARACTER_SET = "abcdefghijklmnopqrstuvwxyz"; // ABCDEFGHIJKLMNOPQRSTUVWXYZ"; // se puede agregar para tener mas IDs
-function newId(length) {
+let userId = 0
+const newGameId = ((length) => {
   let id = ""
   for ( let i=0; i<length ; i++ ) {
     let index = Math.floor(Math.random()*CHARACTER_SET.length)
     id = id.concat(CHARACTER_SET[index])
   }
-  if(id in matches) { return newId(length)
+  if(id in matches) { return newGameId(length)
   } else { return id }
-}
+})
 
   const io = socketio(server, {
   cors: {
@@ -34,13 +35,18 @@ let matches = {}
 
 // Cuando alguien entra
 io.on("connection", (sock) => {
+  sock.on("newUser", () => {
+    userId = userId + 1
+    sock.emit("id", userId)
+  })
+
   console.log("Someone in")
   sock.emit("message", ["Welcome!", "server"])
 
 
   // Para crear una sala
   sock.on("createRoom", () => {
-    const match = newId(ID_LENGTH);
+    const match = newGameId(ID_LENGTH);
     sock.emit("redirect", `match.html?match=${match}`);
   })
 
@@ -68,31 +74,43 @@ io.on("connection", (sock) => {
   })
 
   // Para iniciar el juego <(<( en este punto se JOINEA a la ROOM de SOCKETIO )>)>
-  sock.on("joinGame", (code) => {
-    let roomName = code
+  sock.on("joinGame", (gameId, userId) => {
+    let roomName = gameId
+
+    // Si el usuario ya pertenecia al juego (actualiza la pagina por ejemplo) 
+    if (roomName in matches && matches[roomName].wasAlreadyIn(userId)) {
+      matches[roomName].reJoinRoom(sock, userId)
+      console.log("entra en rejoin")
 
 
-    if ( roomName in matches && matches[roomName].isGameStarted) {      // Acá van todos los chequeos de error
+    } else if ( roomName in matches && matches[roomName].isGameStarted) {      // Acá van todos los chequeos de error
       console.log("spectatorsNotAllowed")  
       sock.emit("error", "spectatorsNotAllowed")
     } else {
 
 
-      // Si es el primero de la sala, crear la nueva Room
+      // Si es el primero de la sala, la crea
       if (!(roomName in matches)) {
-        // rooms[roomName] = new Room (roomName, sock)
-        matches[roomName] = new Match(roomName, sock)
-        } else { matches[roomName].joinRoom(sock) }
+        matches[roomName] = new Match(roomName, sock,userId)
+        } else { matches[roomName].joinRoom(sock, userId) }
 
       sock.join(roomName);
 
 
-      sock.on('disconnect', () => {
+      sock.on("closingTab", async () => {
         matches[roomName].leaveRoom(sock)
-        if(matches[roomName].numberOfHumanPlayers === 0) { delete matches[roomName] }
+        if(matches[roomName].numberOfHumanPlayers === 0) {
+          let promise = new Promise((resolve, reject) => {
+            setTimeout(() => resolve("done!"), 5*60*1000)
+          });
+          let result = await promise;
+          if(matches[roomName].numberOfHumanPlayers === 0) { delete matches[roomName] }
+        }
       })
     }
   })
+
+  sock.on("disconnect")
 
 
   // Para el chat
@@ -103,14 +121,12 @@ io.on("connection", (sock) => {
 
   // Para el admin
   sock.on("command", (text) => {
-
-    response = "" // hacer estoooooooooooooooooooooooooooooooooo
+    response = "" // hacer esto
     sock.emit("response", [response, "response"])
   });
 
 
   sock.on("requestReload", () => {
-
     rooms.forEach((id) => {
       console.log(id,"  =>  ");
     })
