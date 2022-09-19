@@ -76,29 +76,23 @@ io.on("connection", (sock) => {
   // Para iniciar el juego <(<( en este punto se JOINEA a la ROOM de SOCKETIO )>)>
   sock.on("joinGame", (gameId, userId) => {
     let roomName = gameId
-    console.log("eeee")
 
 
     // Si el usuario ya pertenecia al juego (actualiza la pagina por ejemplo) 
-    if (roomName in matches && matches[roomName].wasAlreadyIn(userId)) {
+    if (roomName in matches && matches[roomName].humanPlayersId.includes(userId)) {
+      sock.join(roomName)
       matches[roomName].reJoinRoom(sock, userId)
-      console.log("entra en rejoin")
-
 
     } else if ( roomName in matches && matches[roomName].isGameStarted) {      // Acá van todos los chequeos de error
-      console.log("spectatorsNotAllowed")  
       sock.emit("error", "spectatorsNotAllowed")
     } else {
-
-      console.log("else")
-
 
       // Si es el primero de la sala, la crea
       if (!(roomName in matches)) {
         matches[roomName] = new Match(roomName, sock,userId)
         } else { matches[roomName].joinRoom(sock, userId) }
 
-      sock.join(roomName);
+      sock.join(roomName)
 
 
       sock.on("closingTab", async () => {

@@ -147,7 +147,7 @@ const renderBunchOfCards = ((bunch, containerElement, containerName) => {
 const renderHand = ((hand) => {
   renderBunchOfCards(hand, handElement, "hand")
 })
-sock.on("hand", renderHand)
+sock.on("renderHand", renderHand)
 
 const makeCardPlayable = (index) => {
   const cardSlot = document.getElementById(`hand-card-slot-${index}`)
@@ -171,7 +171,6 @@ const makeCardNotPlayable = (index) => {
 }
 
 const yourTurn = ((playableCards) => {
-  gameMessage("Your Turn")
   playableCards.forEach((playable, index) => {
     if (playable) { makeCardPlayable(index) }
     else {makeCardNotPlayable(index)}
@@ -195,15 +194,43 @@ const renderPile = ((pile) => { // , cardsInPile) => { // para mostrar el numero
     pile.classList.remove("empty-pile")
 })
 
-const flip = ([player, card]) => {
+const renderAllPiles = ((piles) => { // , cardsInPile) => { // para mostrar el numero de cartas
+  piles.forEach((pile, index) => {
+    if (pile.exists) {
+      playersPiles[index].classList.remove("empty-pile")
+      
+      for (let i = 0; i<pile.extras; i++) {
+        chant([index, "generic", false])
+      }
+
+    } else {
+      playersPiles[index].classList.add("empty-pile")
+    }
+  })
+})
+
+const renderGame = ((piles, cards) => {
+  console.log(piles, "piles")
+  console.log(cards, "cards")
+
+
+  renderAllPiles(piles)
+  cards.forEach((card, index) => {
+    if (card) { flip([card, index]) }
+  })
+})
+sock.on("renderGame", renderGame)
+
+
+const flip = ([card, player]) => {
   if (firstBotMove) {
-    gameMessage(`All oponents are bots. Click to make them play`)
+    // gameMessage(`You are against bots. Click to make them play`) 
     firstBotMove = false
   } else {
     gameMessage("")
   }
   playersCardSlots[player].innerHTML = ""
-  playersCardSlots[player].appendChild(getHTMLOf(card, false))
+  if (card) { playersCardSlots[player].appendChild(getHTMLOf(card, false)) }
 }
 sock.on("flip", flip)
 
@@ -244,9 +271,9 @@ sock.on("chantOption", chantOption)
 
 
 function deal(myNum, totPlayers, names, hand, triumphSuitParameter, startingPlayer, allBots) {
-  gameWrapper.style.display = "flex";
-  settingsWrapper.style.display = "none";
-  resultWrapper.style.display = "none";
+  gameWrapper.classList.remove("hidden");
+  settingsWrapper.classList.add("hidden");
+  resultWrapper.classList.add("hidden");
   myNumber = myNum
   totalPlayers = totPlayers
   playerNames = names
@@ -268,12 +295,13 @@ function deal(myNum, totPlayers, names, hand, triumphSuitParameter, startingPlay
   triumphSuit = triumphSuitParameter
   triumphSuitSymbol.src =`../img/${triumphSuit}.png`
   if (startingPlayer != myNum && firstBotMove) {
-    gameMessage(`You are against bots. Click to make them play`)
+    // gameMessage(`You are against bots. Click to make them play`)
     firstBotMove = false
   }
   pointsForChant()
 }
 sock.on("deal", deal)
+
 
 function activatePlayButton() {
     gameButtons.play.classList.add("game-button-active")
@@ -325,8 +353,8 @@ const nextRoundButton = (() => {
 })
 
 function roundResult([pilesForCount, finalCount]) {
-  gameWrapper.style.display = "none";
-  resultWrapper.style.display = "flex";
+  gameWrapper.classList.add("hidden");
+  resultWrapper.classList.remove("hidden");
   
   if (firstRound) {
     setResultWrapper()

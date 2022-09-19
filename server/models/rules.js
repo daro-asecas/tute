@@ -18,29 +18,25 @@ rules.nextSuit = ((suit) => {
   return rules.suitOrder[(index+1)%4]
 })
 
-rules.playableCards = ((hand, currentBest, trickSuit, triumphSuit) => {
-  if (hand.hasAnyCardOf(trickSuit)) {
-    if ( currentBest.suit === trickSuit) {
+rules.playableCards = ((hand, trickData) => { // currentBest, suit, triumphSuit
+  if (trickData.turns === 0) { 
+    return rules.allPlayable(hand) }
+  if (hand.hasAnyCardOf(trickData.suit)) {
+    if ( trickData.currentBest.suit === trickData.suit) {
       return hand.cards.map((card) => {
-        if(hand.canKillInSameSuit(currentBest)) { 
-          return card.beatsInSameSuit(currentBest)
-        } else { return (card.suit===trickSuit) }
-        // if( card.suit != trickSuit ) { return false
-        // } else if (card.power < currentBest.power && hand.canKillInSameSuit(currentBest)) { 
-          //   console.log(card.power < currentBest.power && hand.canKillInSameSuit(currentBest))
-          //   console.log(currentBest.power && hand.canKillInSameSuit(currentBest))
-          //   return false
-          // } else { return true }
+        if(hand.canKillInSameSuit(trickData.currentBest)) { 
+          return card.beatsInSameSuit(trickData.currentBest)
+        } else { return (card.suit===trickData.suit) }
       }) 
     } else {
-      return hand.cards.map((card) => { return (card.suit === trickSuit) })}
-  } else if (hand.hasAnyCardOf(triumphSuit)) {
-    if (trickSuit === currentBest.suit) {
+      return hand.cards.map((card) => { return (card.suit === trickData.suit) })}
+  } else if (hand.hasAnyCardOf(trickData.triumphSuit)) {
+    if (trickData.suit === trickData.currentBest.suit) {
       return hand.cards.map((card) => {
-        return ( triumphSuit === card.suit )})
-    } else if(hand.canKillInSameSuit(currentBest)) {
+        return ( trickData.triumphSuit === card.suit )})
+    } else if(hand.canKillInSameSuit(trickData.currentBest)) {
       return hand.cards.map((card) => {
-        return card.beatsInSameSuit(currentBest)})
+        return card.beatsInSameSuit(trickData.currentBest)})
     } else {
       console.log("crear alerta de ME ACHICO A TRIUNFO") // "crear alerta de ME ACHICO A TRIUNFO"
       return rules.allPlayable(hand)}

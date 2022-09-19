@@ -26,8 +26,9 @@
   flex-shrink: 0;
 }
 
-#game-wrapper,
-#result-wrapper {
+#settings-wrapper.hidden,
+#game-wrapper.hidden,
+#result-wrapper.hidden {
   display: none;
 }
 

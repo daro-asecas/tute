@@ -7,7 +7,7 @@
 
   /* --first-container-bkg-color: hsl(0, 0%, 29%); */
   --first-container-bkg-color: #262421;
-  --item-bkg-color: black;
+  --item-bkg-color: rgba(0,0,0, 0.5);
   --border-color: #404040;
   --font-color: white;
   --secondary-font-color: lightgray;

@@ -10,18 +10,20 @@ let pilesForCount = []
 let finalCount = []
 let cards = []
 let messages = []
-let startingPlayer, winner, trickSuit, currentBest, triumphSuit, nextPlayer, turns
+const trickData = {}
+let startingPlayer, winner, nextPlayer, trickNumber, playableCards
+
 
 class Match {
   constructor(room, host, hostId) {
     console.log("Room created")
     this.botNum = 0
     this.room = room
-    this.host = host
     this.humanPlayers = []
     this.humanPlayersId = []
     this.players = []
     this.playerNames = []
+    this.state = "settings"
     this.settings = {
       allowSpectators: true,
       pointLimit: 4,
@@ -31,18 +33,10 @@ class Match {
       hitch: 'no',
       roundLoser: 'second'
     }
-    this.isGameStarted = false
-
-    this.host.emit("youAreHost")
+    
+    this.makeHost(host)
     this.joinRoom(host, hostId)
-
-    this.host.on("updateBotCount", (number) => { this.updateBotCountFromHost(number) })
-    this.host.on("updateSettingsFromHost", (key, value) => { this.updateSettingsFromHost(key, value) })
-    this.host.on("changeInPlayersList", (number) => { this.changeInPlayersList() })
-    this.host.on("startMatch", () => { this.startMatch() })
-    // this.host.on("startMatch", this.startMatch)         // no se por que esta no funciono
-    this.host.on("nextRound", () => { this.startGame() })
-    // this.host.on("nextRound", this.startGame)           // no se por que esta no funciono
+    
   }
 
   get numberOfPlayers() { 
@@ -107,14 +101,24 @@ class Match {
     makeHost(sock) {
     this.host = sock
     this.host.emit("youAreHost", this.areAllBots)
-    this.host.emit("message", ["You are host", "server"])
-    this.host.to(this.room).emit("message", [`${this.humanPlayerNames[0]} is host now`, "server"])
+
+    this.host.on("updateBotCount", (number) => { this.updateBotCountFromHost(number) })
+    this.host.on("updateSettingsFromHost", (key, value) => { this.updateSettingsFromHost(key, value) })
+    this.host.on("changeInPlayersList", () => { this.changeInPlayersList() })
+    this.host.on("startMatch", () => { this.startMatch() })
+    this.host.on("nextRound", () => { this.startGame() })
+    // this.host.on("nextRound", this.startGame)           // no se por que no funcionaron asi
+
+
+
   };
 
   updateSettingsScreen() {
     this.emitEventToAllPlayers("updatePlayerList", this.humanPlayerNames)
-    this.emitEventToAllPlayersButHost("updateAllSettingsFromServer", this.settings)
-    this.emitEventToAllPlayersButHost("updateBotCountFromServer", this.botNum)
+    this.emitEventToAllPlayers("updateAllSettingsFromServer", this.settings)
+    this.emitEventToAllPlayers("updateBotCountFromServer", this.botNum)
+    // this.emitEventToAllPlayersButHost("updateAllSettingsFromServer", this.settings)
+    // this.emitEventToAllPlayersButHost("updateBotCountFromServer", this.botNum)
     this.host.emit("updateMatchStartButton", this.isAllowedMatchStart)
   }
 
@@ -129,34 +133,48 @@ class Match {
     this.emitEventToAllPlayersButHost("updateSingleSettingFromServer", key, value)
   }
 
-  wasAlreadyIn(id) {
-    let was = false
-    this.humanPlayersId.forEach(playerId => {
-      if (playerId===id) { was = true }
-    })
-    return was  
+
+  renderGame(sock, sockIndex) {
+    this.updateSettingsScreen()
+
+    if (this.state === "match" || this.state === "result") {
+      sock.emit("deal", sockIndex, this.numberOfPlayers, this.playerNames, hands[sockIndex], trickData.triumphSuit, startingPlayer, this.areAllBots)
+
+      const pilesForRender = piles.map((pile)=>{
+        let pileForRender = {exists: false}
+        if (pile.numberOfCards > 0) {
+          pileForRender.exists = true
+          pileForRender.extras = pile.pointsInChants/20
+        }
+        return pileForRender
+      })
+      sock.emit("renderGame", pilesForRender, cards)
+     
+      this.emitNextTurnData()
+
+      // if (nextPlayer===sockIndex) {
+      //   this.players[nextPlayer].emit("yourTurn", playableCards)
+      //   if (trickData.turns===0 && trickNumber!=0) { this.emitChantInHand() }
+      // }
+
+    }
   }
 
-  reJoinRoom(sock, id) {
-    // sock.to(this.room).emit("message", ["Someone joined", "server"])
-    console.log(this.humanPlayersId, "array de IDs")
-    console.log(id, "ID del que entra")
-    console.log(this.humanPlayersId.indexOf(id), "index")
-    console.log(this.humanPlayers[this.humanPlayersId.indexOf(id)].id, "sock.id previo del que entra")
-    console.log(this.host.id, "sock.id del host")
-    console.log(this.host.id===this.humanPlayers[this.humanPlayersId.indexOf(id)].id, "ToF")
-    console.log(this.humanPlayers[this.humanPlayersId.indexOf(id)].id, "ToF")
-    if(this.host===this.humanPlayers[this.humanPlayersId.indexOf(id)]) {
-      console.log("entra en el if")
-      this.host = sock
-      this.host.emit("youAreHost")
-    }
-    this.humanPlayers[this.humanPlayersId.indexOf(id)] = sock
-    this.updateSettingsScreen()
+  reJoinRoom(sock, userId) {
+    const humanPlayersIndex = this.humanPlayersId.indexOf(userId)
+    const previousSock = this.humanPlayers[humanPlayersIndex]
+    const playersIndex = this.players.indexOf(previousSock)
+
+    previousSock.emit("error", "openInOtherTab")
+    if(this.host===previousSock) { this.makeHost(sock) }
+    
+    this.humanPlayers[humanPlayersIndex] = sock
+    this.players[playersIndex] = sock
+    this.renderGame(sock, playersIndex)
+    this.createGameListeners(sock, playersIndex)
   }
 
   joinRoom(sock, id) {
-    console.log("entra aca")
     sock.to(this.room).emit("message", ["Someone joined", "server"])
     this.humanPlayers.push(sock)
     this.humanPlayersId.push(id)
@@ -169,6 +187,8 @@ class Match {
       sock.to(this.room).emit("message", ["Someone left", "server"])
       if (sock === this.host ) {
         this.makeHost(this.humanPlayers[0])
+        this.host.emit("message", ["You are host", "server"])
+        this.host.to(this.room).emit("message", [`${this.humanPlayerNames[0]} is host now`, "server"])
       }
       this.emitEventToAllPlayers("updatePlayerList", this.humanPlayerNames)
       this.host.emit("updateMatchStartButton", this.isAllowedMatchStart)
@@ -198,6 +218,27 @@ class Match {
 
   }
 
+  createGameListeners(player, index) {
+    player.on("turn", (cardIndex) => {
+      if (nextPlayer===index) {
+        this.onTurn(player, index, cardIndex)
+      }
+    })
+    player.on("chantInHandMade", (suit) => {
+      const isThereAChant = rules.isThereAChant(hands[index].cards)
+      if (isThereAChant.chants[suit] && this.chants[suit]===undefined) {
+        this.emitChant(suit, index)
+      }
+    })
+  }
+
+  resetTrickData() {
+    trickData.suit = ""
+    trickData.turns = 0
+    trickData.currentBest = ""
+    trickData.triumphSuit = trickData.triumphSuit
+  }
+
   startMatch() {
     this.emitEventToAllPlayers("message", "Match starts", "server")
 
@@ -206,49 +247,43 @@ class Match {
     }
 
     this.sitInRandomOrder()
+    this.resetTrickData()
 
-    this.players.forEach((player, index) => {                  // listener de "turn"
+    this.players.forEach((player, index) => {
       if( player instanceof Bot)  {
         player.makePlay = (cardIndex) => {
           this.onTurn(player, index, cardIndex)
         }
       } else {
-        player.on("turn", (cardIndex) => {
-          if (nextPlayer===index) {
-            this.onTurn(player, index, cardIndex)
-          }
-        })
+        this.createGameListeners(player, index)
       }
     })
 
-    this.players.forEach((player, index) => {                  // listener de "chantInHandMade"
-        player.on("chantInHandMade", (suit) => {
-          const isThereAChant = rules.isThereAChant(hands[index].cards)
-          if (isThereAChant.chants[suit] && this.chants[suit]===undefined) {
-            this.emitChant(suit, index)
-          }
-        })
-      
-    })
 
     startingPlayer = Math.floor(Math.random() * this.numberOfPlayers)
-    triumphSuit = rules.suitOrder[3]
+    trickData.triumphSuit = rules.suitOrder[3]
     
-    this.isGameStarted = true
     this.startGame()
+  }
+  
+  get isGameStarted() {
+    return ( this.state != "settings" )
   }
 
   startGame() {
-    // this.players = this.players      // hacer esto si habilito la opcion playerlimit
-    triumphSuit = rules.nextSuit(triumphSuit)
+    this.state = "match"
+    trickData.triumphSuit = rules.nextSuit(trickData.triumphSuit)
     startingPlayer = (startingPlayer + 1) % this.numberOfPlayers
     nextPlayer = startingPlayer
     this.chants = {}
-    turns = 0
+    this.resetTrickData()
+    trickNumber = 0
     const deck = new Deck()
     deck.shuffle()
     hands = deck.deal(this.numberOfPlayers)
-    hands.forEach((hand) => {hand.sort(triumphSuit)})
+    hands.forEach((hand) => {hand.sort(trickData.triumphSuit)})
+
+    cards = this.players.map(function() {})
 
     piles = this.players.map(function() {
       const pile = new Deck([])
@@ -257,35 +292,47 @@ class Match {
     })
 
     this.players.forEach((player, index) => {
-      player.emit("deal", index, this.numberOfPlayers, this.playerNames, hands[index], triumphSuit, startingPlayer, this.areAllBots)
+      player.emit("deal", index, this.numberOfPlayers, this.playerNames, hands[index], trickData.triumphSuit, startingPlayer, this.areAllBots)
     })
 
-    this.emitYourTurn(nextPlayer, rules.allPlayable(hands[nextPlayer]))
+    this.emitNextTurnData()
   }
 
   onTurn(player, index, cardIndex) {
     nextPlayer = (nextPlayer + 1) % this.numberOfPlayers
-    turns++
+    trickData.turns++
     cards[index] = hands[index].play(cardIndex);
-    if (turns === 1) {
-      trickSuit = cards[index].suit
+    if (trickData.turns === 1) {
+      trickData.suit = cards[index].suit
       winner = index
-      currentBest = cards[index]
-    } else if (cards[index].beats(currentBest, trickSuit, triumphSuit)) {
+      trickData.currentBest = cards[index]
+    } else if (cards[index].beats(trickData.currentBest, trickData.suit, trickData.triumphSuit)) {
       winner = index
-      currentBest = cards[index]
+      trickData.currentBest = cards[index]
     }
-    player.emit("hand", hands[index])
-    this.emitEventToAllPlayers("flip", index, cards[index])
+    player.emit("renderHand", hands[index])
+    this.emitEventToAllPlayers("flip", cards[index], index)
     
-    if (turns === this.numberOfPlayers) { this.trickResult() }
+    if (trickData.turns === this.numberOfPlayers) { this.trickResult() }
     else {
-      let playableCards = rules.playableCards(hands[nextPlayer], currentBest, trickSuit, triumphSuit)
-      this.emitYourTurn(nextPlayer, playableCards)
+      this.emitNextTurnData()
     }
   }
-  
-  emitYourTurn(nextPlayer, playableCards) {
+
+  emitChantInHand() {
+    const chantsInHand = rules.isThereAChant(hands[winner].cards)
+    if (chantsInHand.isThere) {
+      Object.entries(chantsInHand.chants).forEach(([key, value]) => {
+        if (value && this.chants[key]===undefined) {
+          const chantSuit = key
+          this.players[winner].emit("chantOption", chantSuit)
+        }
+      })
+    }
+  }
+
+  emitNextTurnData() {
+    const playableCards = rules.playableCards(hands[nextPlayer], trickData)
     if(this.areAllBots && this.players[nextPlayer] instanceof Bot) {
       let isListenerActive = true
       this.host.emit("activatePlayButton")
@@ -297,6 +344,10 @@ class Match {
         })
     } else {
       this.players[nextPlayer].emit("yourTurn", playableCards)
+
+      if (trickData.turns===0 && trickNumber!=0) {
+        this.emitChantInHand()        
+      }
     }
     this.emitEventToAllPlayers("turnOfPlayer", nextPlayer)
   }
@@ -308,20 +359,18 @@ class Match {
     this.nextTrick(winnerName)
   }
 
-  async nextTrick(winnerName) {
+  async nextTrick() {
     let promise = new Promise((resolve, reject) => {
       setTimeout(() => resolve("done!"), 2000)
     });
-    let result = await promise;
- 
-    turns = 0
+    let result = await promise
+
+    
     nextPlayer = winner
+    this.resetTrickData()
     this.winnerCollects()
     if (hands[0].numberOfCards) {
-      this.emitYourTurn(nextPlayer, rules.allPlayable(hands[nextPlayer]))
-      messages = cards.map(function() {return `${winnerName} starts`})
-      messages[winner] = "You start"
-      this.sendToAllPlayers(messages)
+      this.emitNextTurnData()
     } else {
       piles[winner].extras.lastRound = 10
       this.endRound()
@@ -330,11 +379,9 @@ class Match {
 
   emitChant(suit, playerIndex) {
     this.chants[suit] = playerIndex
-    if (suit===triumphSuit) { piles[playerIndex].extras[suit] = 40
+    if (suit===trickData.triumphSuit) { piles[playerIndex].extras[suit] = 40
     } else { piles[playerIndex].extras[suit] = 20 }
-    console.log(piles[playerIndex].extras)
-    console.log(piles[playerIndex].extras[suit])
-    let isDouble = suit===triumphSuit
+    let isDouble = suit===trickData.triumphSuit
     this.emitEventToAllPlayers("chant", playerIndex, suit, isDouble)
   }
 
@@ -350,29 +397,16 @@ class Match {
     }
 
     piles[winner].join(cards)
-    this.emitEventToAllPlayers("winnerCollects", winner)
-    
-    const chantsInHand = rules.isThereAChant(hands[winner].cards)
-    if (chantsInHand.isThere) {
-      Object.entries(chantsInHand.chants).forEach(([key, value]) => {
-        if (value && this.chants[key]===undefined) {
-          const chantSuit = key
-          this.players[winner].emit("chantOption", chantSuit)
-        }
-      })
-    }
+    cards = cards.map(()=>{})
 
+    this.emitEventToAllPlayers("winnerCollects", winner)
   }
 
   endRound() {
-    pilesForCount = piles.map(function(pile) {return pile.onlyCardsWithValue(triumphSuit)})
+    pilesForCount = piles.map(function(pile) {return pile.onlyCardsWithValue(trickData.triumphSuit)})
     finalCount = pilesForCount.map(function(pile) {return pile.finalCount})
-    // this.countChant("oro")
-    // this.countChant("copa")
-    // this.countChant("espada")
-    // this.countChant("basto")
-    // this.countChant("lastRound")
     this.emitEventToAllPlayers("roundResult", pilesForCount, finalCount)
+    this.state = "result"
   }
 
 
@@ -380,3 +414,14 @@ class Match {
 
 
 module.exports = Match;
+
+// class Player {
+//   constructor(id, sock) {
+//     this.id = id
+//     this.sock = sock
+//   }
+
+//   get isHost() {
+
+//   }
+// }

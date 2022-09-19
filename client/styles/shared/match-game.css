@@ -19,7 +19,7 @@
   z-index: 5;
   position: absolute;
   bottom: 7rem;
-  left: 2rem;
+  right: 2rem;
   display: flex;
   flex-direction: row;
   gap: 0.2rem;
@@ -74,7 +74,7 @@
 }
 
 .game-button-play {
-  padding: 1rem 0.8rem;
+  padding: 1rem;
 }
 
 .game-button:hover {

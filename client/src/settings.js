@@ -152,16 +152,26 @@ document.addEventListener('DOMContentLoaded', (event) => {
   let userId = 0
   if (localStorage.userId) { userId = localStorage.userId }
   sock.emit("joinGame", match, userId)
-  console.log("emitting 'joinGame'")
 })
 
 
 const error = ((error) => {
-  if (error === "spectatorsNotAllowed") {
-    window.location.replace(`../index.html?error=spectatorsNotAllowed`);
-  } else {
-    sock.emit("serverConsoleLog", "Error parameter unknown")
+  switch (error) {
+    case "spectatorsNotAllowed":
+      window.location.replace(`../index.html?error=spectatorsNotAllowed`);  
+      break
+    case "openInOtherTab":
+      window.location.replace(`../index.html?error=openInOtherTab`);  
+      break
+    default:
+      sock.emit("serverConsoleLog", "Error parameter unknown")
+      break
   }
+  // if (error === "spectatorsNotAllowed") {
+  //   window.location.replace(`../index.html?error=spectatorsNotAllowed`);
+  // } else {
+  //   sock.emit("serverConsoleLog", "Error parameter unknown")
+  // }
 })
 sock.on("error", error)
 

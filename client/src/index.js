@@ -37,10 +37,13 @@ const showError = ((error) => {
     case "unexistingRoom":
       msg = "Incorrect game ID"
       break
-    case "spectatorsNotAllowed":
-      msg = "This game does not allow spectators"
-      break
-      default:
+      case "openInOtherTab":
+        msg = "You opened the game in another tab"
+        break
+      case "spectatorsNotAllowed":
+        msg = "This game does not allow spectators"
+        break
+    default:
       sock.emit("serverConsoleLog", "Error parameter unknown")
   }
   errorDiv.innerText = msg

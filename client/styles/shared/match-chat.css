@@ -51,6 +51,7 @@ min-width: 0;
   padding: 0.2rem;
   display: flex;
   align-items: center;
+  background-color: var(--item-bkg-color);
   border: solid 1px lightgray;
   /* color: white; */
   border-radius: 5px;
@@ -72,6 +73,7 @@ min-width: 0;
 }
 
 #messages li.server {
+  background-color: transparent;
   align-self: center;
   text-align: center;
   color: var(--secondary-font-color);
