@@ -257,23 +257,23 @@ input[type="checkbox"].toggle:disabled + label::after {
   height: 2rem;
 }
 
-.prompt-button-wrapper {
+.prompt-button-container {
   width: 100%;
   display: flex;
   flex-direction: row;
   gap: 0.5rem;
 }
 
-.prompt-button-wrapper > * {
+.prompt-button-container > * {
   flex-basis: 0;
   flex-grow: 1;
   height: 2rem;
 }
 
-.prompt-button-wrapper > .close-prompt-button {
+.prompt-button-container > .close-prompt-button {
   background-color: gray;
 }
 
-.prompt-button-wrapper > .close-prompt-button:hover {
+.prompt-button-container > .close-prompt-button:hover {
   background-color: lightgray;
 }

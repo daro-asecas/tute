@@ -7,7 +7,7 @@ const botCount = document.querySelector("#bot-count")
 const settingsModifiers = document.querySelectorAll(".settings-modifier")
 const modifiersKey = ["allowSpectators", "pointLimit", "pointLimit", "handLosesDouble", "allowRedeal", "playersLimit", "playersLimit", "hitch", "roundLoser"]
 const inviteBtn = document.querySelector("#invite-btn");
-const startGameButton = document.querySelector("#start-game-button")
+const startGameButton = document.querySelector("#start-game-button-border")
 const addBotPrompt = document.querySelector("#add-bot-prompt")
 const maxPlayerExceededPrompt = document.querySelector("#max-player-exceeded-prompt")
 
@@ -131,20 +131,6 @@ const hostFunctions = () => {
   })
 }
 sock.on("youAreHost", hostFunctions)
-
-// const updateMatchStartButton = (bool) => {
-//   canStartGame = bool
-//   if (canStartGame) {
-//     startGameButton.classList.remove("disabled")
-//     startGameButton.setAttribute("alert", "")
-//   } else {
-//     startGameButton.classList.add("disabled")
-//     startGameButton.setAttribute("alert", "3 to 5 players needed")
-//   }
-
-// }
-// sock.on("updateMatchStartButton", updateMatchStartButton)
-
 
 const error = ((error) => {
   switch (error) {

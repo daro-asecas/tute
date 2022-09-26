@@ -29,7 +29,7 @@
   <div id="add-bot-prompt" class="prompt hidden">
     <form id="add-bot-form" class="prompt-form">
       <div class="prompt-text">You need at least 3 players. Wanna add <span id="add-x-bots"></span>?</div>
-      <div class="prompt-button-wrapper">
+      <div class="prompt-button-container">
         <button class="close-prompt-button">Cancel</button>
         <button id="add-bots-and-start-game">OK!</button>
       </div>
@@ -151,8 +151,9 @@
         </div>
 
       </div>
-      <button id="start-game-button" class="hidden"></button>
-      <!-- alert="3 to 5 players needed" -->
+      <div id="start-game-button-border" class="hidden">
+        <button id="start-game-button">Start Game!</button>
+      </div>
     </div>
 
     <div id="game-wrapper" class="hidden">
