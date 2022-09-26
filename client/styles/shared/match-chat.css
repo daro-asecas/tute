@@ -4,7 +4,6 @@
 
 #chat-wrapper {
 padding: 1.5rem;
-padding-right: 0;
 /* padding-top: 1.5rem;
 padding-bottom: 1.5rem; */
 gap: 0.2rem;
@@ -51,8 +50,8 @@ min-width: 0;
   padding: 0.2rem;
   display: flex;
   align-items: center;
+  border: solid 1px var(--border-color);
   background-color: var(--item-bkg-color);
-  border: solid 1px lightgray;
   /* color: white; */
   border-radius: 5px;
   max-width:80%;
@@ -73,6 +72,7 @@ min-width: 0;
 }
 
 #messages li.server {
+  border: 0px;
   background-color: transparent;
   align-self: center;
   text-align: center;
@@ -118,10 +118,11 @@ min-width: 0;
 
 #chat-form button {
   margin-right: -1px;
-  padding: 0 0.2rem;
+  padding: 0 0.4rem;
   border-radius: 0;
   flex-grow: 1;
   flex-shrink: 0;
+  font-weight: bold;
 }
 
 #match-details {

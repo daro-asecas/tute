@@ -43,7 +43,9 @@ rules.playableCards = ((hand, trickData) => { // currentBest, suit, triumphSuit
   } else { return rules.allPlayable(hand) }
 })
 
-rules.allPlayable = (hand) => { return hand.cards.map((card) => { return (true) })}
+rules.allPlayable = (hand) => { 
+  return hand.cards.map((card) => { return (true) 
+  })}
 
 rules.roundWinner = ((cards, trickSuit, triumphSuit) => {
   let bestCard

@@ -171,29 +171,45 @@ div:hover ~ .info {
 }
 
 #start-game-button {
+  position: relative;
   height: 5rem;
-  padding: 0;
   flex-basis: 100%;
+  padding: 0;
   border-radius: 0.8rem;
-  font-size: 2.5rem;
-  font-weight: bolder;
 }
 
-#start-game-button.disabled {
+#start-game-button::before {
+  z-index: -1;
+  content: "";
+  border-radius: 0.8rem;
+  position: absolute;
+  height: calc(100% - 0rem);
+  width: calc(100% - 0rem);
+  top: +0rem;
+  left: calc(+0rem);
+  background: linear-gradient(0deg, rgba(255, 162, 0, 1), rgba(255, 183, 0, 1));
+  /* Borde animado */
+  animation: beating-border 1.5s cubic-bezier(.42,0,.58,1) infinite;
+}
+
+#start-game-button::after {
+  content: "Start Game!";
+  z-index: 1;
+  font-weight: bolder;
+  font-size: 2.5rem;
+}
+
+/* #start-game-button.disabled {
   font-size: 2rem;
 }
 
 #start-game-button.disabled::after {
   content: attr(alert);
-  /* position: absolute; */
-  /* bottom: 4.1rem;
-  left: 1rem; */
-  /* color:brown; */
   display: block ;
   font-size: 1.05rem;
   font-weight: bold;
   padding-top: 0.3rem;
-}
+} */
 
 h2 {
   margin: 0;

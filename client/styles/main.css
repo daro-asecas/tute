@@ -39,3 +39,7 @@ body {
 /* *:hover::-webkit-scrollbar {
   display:block ;
 } */
+
+.hidden {
+  display: none !important;
+}

@@ -1,4 +1,4 @@
-const writeEvent = ([text, emisor]) => {
+const writeEvent = (text, emisor) => {
   const messagesWrap = document.querySelector("#messages")  // <ul> element
   const el = document.createElement("li");   // <li> element
   el.classList.add(emisor);
@@ -8,18 +8,18 @@ const writeEvent = ([text, emisor]) => {
 };
 sock.on("message", writeEvent)
 
-const onFormSubmitted = (e) => {
+const onMessageSent = (e) => {
   e.preventDefault();
   const input =  document.querySelector("#msg");
   if (input.value) {
     const text = input.value;
     input.value = "";
     
-    sock.emit("message", text, room);
+    sock.emit("message", text, roomCode);
   };
 };
 
 
-document.querySelector("#chat-form").addEventListener("submit", onFormSubmitted);
+document.querySelector("#chat-form").addEventListener("submit", onMessageSent);
 
-const room = window.location.href.substring(window.location.href.length-5)
+const roomCode = new URLSearchParams(window.location.search).get("match");

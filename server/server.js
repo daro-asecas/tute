@@ -1,5 +1,5 @@
 const Match = require("./models/match");
-// const Room = require("./models/room");
+const User = require("./models/user");
 
 const http = require("http");
 const express = require("express");
@@ -32,16 +32,45 @@ module.exports = io;
 
 let rooms = {}
 let matches = {}
+let users = []
+
 
 // Cuando alguien entra
 io.on("connection", (sock) => {
+  console.log("Someone in")
+  sock.emit("handshake")
+  sock.on("returnHandshake", (connection) => {
+    if(connection === 0) {
+      
+      sock.emit("message", "Welcome!", "server")
+    } else {
+      sock.emit("message", "Server reconected!", "server")
+    }
+    
+  })
+
+
   sock.on("newUser", () => {
     userId = userId + 1
     sock.emit("id", userId)
+    users[userId] = new User ()
+  })
+  
+  sock.on("sendingUserData", (userId, userName) => {
+    if (users[userId] instanceof User) {
+      users[userId].newName(userName)
+    } else {
+      users[userId] = new User (userId, userName)
+    }
+    sock.name = userName
   })
 
-  console.log("Someone in")
-  sock.emit("message", ["Welcome!", "server"])
+  sock.on("newUserName", (userId, userName) => {
+    users[userId].newName(userName)
+    sock.name = userName
+    matches[sock.match].emitEventToAllPlayers("updatePlayerList", matches[sock.match].humanPlayerNames)
+
+  })
 
 
   // Para crear una sala
@@ -81,6 +110,7 @@ io.on("connection", (sock) => {
     // Si el usuario ya pertenecia al juego (actualiza la pagina por ejemplo) 
     if (roomName in matches && matches[roomName].humanPlayersId.includes(userId)) {
       sock.join(roomName)
+      sock.match = roomName
       matches[roomName].reJoinRoom(sock, userId)
 
     } else if ( roomName in matches && matches[roomName].isGameStarted) {      // Acá van todos los chequeos de error
@@ -93,18 +123,20 @@ io.on("connection", (sock) => {
         } else { matches[roomName].joinRoom(sock, userId) }
 
       sock.join(roomName)
+      sock.match = roomName
 
+      // sock.on("closingTab", async () => {
+      //   console.log("closing Tab")
 
-      sock.on("closingTab", async () => {
-        matches[roomName].leaveRoom(sock)
-        if(matches[roomName].numberOfHumanPlayers === 0) {
-          let promise = new Promise((resolve, reject) => {
-            setTimeout(() => resolve("done!"), 5*60*1000)
-          });
-          let result = await promise;
-          if(matches[roomName].numberOfHumanPlayers === 0) { delete matches[roomName] }
-        }
-      })
+        // matches[roomName].leaveRoom(sock)
+        // if(matches[roomName].numberOfHumanPlayers === 0) {
+        //   let promise = new Promise((resolve, reject) => {
+        //     setTimeout(() => resolve("done!"), 5*60*1000)
+        //   });
+        //   let result = await promise;
+        //   if(matches[roomName].numberOfHumanPlayers === 0) { delete matches[roomName] }
+        // }
+      // })
     }
   })
 
@@ -113,8 +145,8 @@ io.on("connection", (sock) => {
 
   // Para el chat
   sock.on("message", (text, room) => {
-    sock.emit("message", [text, "me"])
-    sock.to(room).emit("message", [text, "other"])
+    sock.emit("message", text, "me")
+    sock.to(room).emit("message", text, "other")
   });
 
   // Para el admin

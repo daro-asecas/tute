@@ -6,7 +6,6 @@
   flex-direction: column;
   justify-content: space-between;
   padding: var(--containers-gap);
-  z-index: -1;
   user-select: none;
 }
 

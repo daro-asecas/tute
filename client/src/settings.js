@@ -7,9 +7,11 @@ const botCount = document.querySelector("#bot-count")
 const settingsModifiers = document.querySelectorAll(".settings-modifier")
 const modifiersKey = ["allowSpectators", "pointLimit", "pointLimit", "handLosesDouble", "allowRedeal", "playersLimit", "playersLimit", "hitch", "roundLoser"]
 const inviteBtn = document.querySelector("#invite-btn");
+const startGameButton = document.querySelector("#start-game-button")
+const addBotPrompt = document.querySelector("#add-bot-prompt")
+const maxPlayerExceededPrompt = document.querySelector("#max-player-exceeded-prompt")
+
 let imHost = false
-let startGameButton
-let canStartMatch = false
 let settings = {}
 const settingsElements = {
   allowSpectators: document.querySelector("#allow-spectators"),
@@ -37,9 +39,9 @@ const createPlayerLi = (name => {
   playerList.appendChild(li)
 })
 
-const updatePlayerList = ([playerNames]) => {
+const updatePlayerList = (playerNames) => {
   playerList.innerHTML = ""
-  playerNames.forEach(name => { createPlayerLi(name) })  
+  playerNames.forEach(name => { if (!!name) {createPlayerLi(name)} })  
 }
 sock.on("updatePlayerList", updatePlayerList)
 
@@ -49,25 +51,27 @@ const updateBotCountFromServer = ((numberOfBots) => {
 sock.on("updateBotCountFromServer", updateBotCountFromServer)
 
 const updateSingleSettingFromServer = (([key, value]) => {
-  switch (settingsElements[key].classList[0]) {
-    case "stepper":
-      settingsElements[key].innerText = value
-      break;
-    case "toggle":
-      settingsElements[key].checked = value
-      if (key === "handLosesDouble") { 
-          disableRedealToggle() }
-      break;
-    default:
-      settingsElements[key].value = value
-      break;
+  if (value!=undefined) {
+    switch (settingsElements[key].classList[0]) {
+      case "stepper":
+        settingsElements[key].innerText = value
+        break;
+      case "toggle":
+        settingsElements[key].checked = value
+        if (key === "handLosesDouble") { 
+            disableRedealToggle() }
+        break;
+      default:
+        settingsElements[key].value = value
+        break;
+    }
   }
 
 
 })
 sock.on("updateSingleSettingFromServer", updateSingleSettingFromServer)
 
-const updateAllSettingsFromServer = (([settingsFromServer]) => {
+const updateAllSettingsFromServer = ((settingsFromServer) => {
   settings = settingsFromServer
   Object.entries(settingsElements).forEach(entry => {
     const [key, element] = entry
@@ -91,26 +95,25 @@ const updateSettingsFromHost = ((btn,key) => {
   sock.emit("updateSettingsFromHost", key, settings[key])
 })
 
-const emitStartMatch = () => {
-  if (!canStartMatch) {return}
-  settings.allowSpectators = document.querySelector("#allow-spectators").value
-  settings.pointLimit = document.querySelector("#point-limit").innerText
-  settings.handLosesDouble = document.querySelector("#hand-loses-double").value
-  settings.allowRedeal = document.querySelector("#redeal").value
-  settings.playersLimit = document.querySelector("#players-limit").innerText
-  settings.hitch = document.querySelector("#hitch").value
-  settings.roundLoser = document.querySelector("#round-loser").value
-  sock.emit("startMatch")
+const emitStartGameRequest = () => {
+  sock.emit("startGameRequest")
 }
 
-const createStartGameButton = () => {
-  const button = document.createElement("button")
-  button.setAttribute("id", "start-game-button")
-  button.classList.add("disabled")
-  button.innerText = "Start Game"
-  settingsWrapper.appendChild(button)
-  startGameButton = document.querySelector("#start-game-button")
-  startGameButton.addEventListener("click", emitStartMatch)
+const askForAddingBotsForStart = (numberOfBots) => {
+  const text = `${numberOfBots} bot${numberOfBots>1?"s":""}`
+  document.getElementById("add-x-bots").innerText = text
+  addBotPrompt.classList.remove("hidden")
+}
+sock.on("askForAddingBotsForStart", askForAddingBotsForStart)
+
+const maxPlayerNumberExceeded = () => {
+  maxPlayerExceededPrompt.classList.remove("hidden")
+}
+sock.on("maxPlayerNumberExceeded", maxPlayerNumberExceeded)
+
+const activateStartGameButton = () => {
+  startGameButton.classList.remove("hidden")
+  startGameButton.addEventListener("click", emitStartGameRequest)
 }
 
 const hostFunctions = () => {
@@ -119,7 +122,7 @@ const hostFunctions = () => {
     element.classList.remove("im-not-host")
   })
 
-  createStartGameButton()
+  activateStartGameButton()
   
   settingsModifiers.forEach((btn, index) => {
     btn.addEventListener("click", () => {
@@ -129,30 +132,18 @@ const hostFunctions = () => {
 }
 sock.on("youAreHost", hostFunctions)
 
-const updateMatchStartButton = (bool) => {
-  canStartMatch = bool
-  if (canStartMatch) {
-    startGameButton.classList.remove("disabled")
-    startGameButton.setAttribute("alert", "")
-    // startGameButton.innerText = "Start Game"
-  } else {
-    startGameButton.classList.add("disabled")
-    // startGameButton.innerText = "3 to 5 players needed"
-    // startGameButton.alert = "3 to 5 players needed";
-    startGameButton.setAttribute("alert", "3 to 5 players needed")
-  }
+// const updateMatchStartButton = (bool) => {
+//   canStartGame = bool
+//   if (canStartGame) {
+//     startGameButton.classList.remove("disabled")
+//     startGameButton.setAttribute("alert", "")
+//   } else {
+//     startGameButton.classList.add("disabled")
+//     startGameButton.setAttribute("alert", "3 to 5 players needed")
+//   }
 
-}
-sock.on("updateMatchStartButton", updateMatchStartButton)
-
-
-
-document.addEventListener('DOMContentLoaded', (event) => {
-  const match = new URLSearchParams(window.location.search).get("match");
-  let userId = 0
-  if (localStorage.userId) { userId = localStorage.userId }
-  sock.emit("joinGame", match, userId)
-})
+// }
+// sock.on("updateMatchStartButton", updateMatchStartButton)
 
 
 const error = ((error) => {

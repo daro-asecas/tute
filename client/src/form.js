@@ -47,3 +47,52 @@ const disableRedealToggle = () => {
     redeal.disabled = true
   }
 }
+
+
+
+
+// Prompt for userName
+const userNamePrompt = document.getElementById("user-name-prompt")
+const userNameInput = document.getElementById("user-name")
+const userNameSubmit = document.getElementById("submit-name")
+const showUserNamePrompt = (() => { userNamePrompt.classList.remove("hidden") })
+const hidUserNamePrompt = (() => { userNamePrompt.classList.add("hidden") })
+
+if (!localStorage.userName) {
+  showUserNamePrompt()
+}
+
+// userNameSubmit.addEventListener("click", () => {
+//   if (!!userName) {  // ( "" === false )
+//     localStorage.setItem("userName",userName);
+//     hidUserNamePrompt()
+//     sock.emit("newUserName" , localStorage.userName)
+//   }
+// })
+
+
+const onNameSubmitted = (e) => {
+  e.preventDefault()
+  const userName = userNameInput.value.trim()
+  if (!!userName) {  // ( "" === false )
+    localStorage.setItem("userName",userName);
+    hidUserNamePrompt()
+    sock.emit("newUserName" , localStorage.userId, localStorage.userName)
+  }
+}
+document.getElementById("user-name-form").addEventListener("submit", onNameSubmitted)
+
+
+const emitForceStartgame = (e) => {
+  e.preventDefault()
+  e.target.closest(".prompt").classList.add("hidden")
+  sock.emit("forceStartGame")
+}
+document.getElementById("add-bots-and-start-game").addEventListener("click", emitForceStartgame)
+
+
+const closeParentPrompt = (e) => {
+  e.preventDefault()
+  e.target.closest(".prompt").classList.add("hidden")
+}
+document.querySelector(".close-prompt-button").addEventListener("click", closeParentPrompt)

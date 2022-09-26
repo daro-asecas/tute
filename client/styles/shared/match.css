@@ -48,6 +48,7 @@
     flex-grow: 1;
     flex-shrink: 1;
     max-width: 20rem;
+    padding-right: 0;
   }
 
 }
@@ -78,7 +79,8 @@
 }
 
   #chat-wrapper {
-    height: 10rem;
+    min-height: 15rem;
+    max-height: calc(100vh - 113vw);
     width: 100vw;
   }
 

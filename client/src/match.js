@@ -29,7 +29,7 @@ const triumphSuitSymbol = document.querySelector("#suit-symbol");
 
 const forEachPlayer = ((fn, ...parameters) => {
   for (let i = 0; i<totalPlayers; i++) {
-    fn(i, parameters)
+    fn(i, ...parameters)
   }
 })
 
@@ -179,7 +179,7 @@ const yourTurn = ((playableCards) => {
 sock.on("yourTurn", yourTurn)
 
 
-const turnOfPlayer = (([nextPlayer]) => {
+const turnOfPlayer = ((nextPlayer) => {
   avatars.forEach((element, index) => {
     if (index != myNumber) {
       if (index === nextPlayer) { element.classList.add("next-player")
@@ -210,19 +210,15 @@ const renderAllPiles = ((piles) => { // , cardsInPile) => { // para mostrar el n
 })
 
 const renderGame = ((piles, cards) => {
-  console.log(piles, "piles")
-  console.log(cards, "cards")
-
-
   renderAllPiles(piles)
   cards.forEach((card, index) => {
-    if (card) { flip([card, index]) }
+    if (card) { flip(card, index) }
   })
 })
 sock.on("renderGame", renderGame)
 
 
-const flip = ([card, player]) => {
+const flip = (card, player) => {
   if (firstBotMove) {
     // gameMessage(`You are against bots. Click to make them play`) 
     firstBotMove = false
@@ -242,7 +238,7 @@ function winnerCollects(winner) {
 sock.on("winnerCollects", winnerCollects)
 
 
-function chant([playerIndex, chantSuit, isDouble]) {
+function chant(playerIndex, chantSuit, isDouble) {
   const chantContainer = document.createElement("div")
   const chantCard = document.createElement("div")
   if (playersChants[playerIndex].childElementCount===0) {
@@ -338,7 +334,7 @@ const setResultWrapper = () => {
   })
 }
 
-const fillPlayerResultDiv = ((i, [pilesForCount, finalCount]) => {
+const fillPlayerResultDiv = ((i, pilesForCount, finalCount) => {
   counts[i].innerHTML = finalCount[i]
   renderBunchOfCards(pilesForCount[i], resultPiles[i], `result-player${i}`)
 })
@@ -349,10 +345,11 @@ const nextRoundButton = (() => {
   nextRoundBtn.setAttribute("id", "next-round-button")
   nextRoundBtn.classList.add("button")
   resultWrapper.appendChild(nextRoundBtn)
+  console.log("ud esta aqui")
   document.getElementById("next-round-button").addEventListener("click", () => {sock.emit("nextRound")})
 })
 
-function roundResult([pilesForCount, finalCount]) {
+function roundResult(pilesForCount, finalCount) {
   gameWrapper.classList.add("hidden");
   resultWrapper.classList.remove("hidden");
   

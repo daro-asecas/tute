@@ -98,7 +98,7 @@
 .game-button-border::before {
   z-index: 4;
   content: "";
-  border-radius: 0.5rem;
+  border-radius: 0.3rem;
   position: absolute;
   height: calc(100% - 0rem);
   width: calc(100% - 0rem);
@@ -448,7 +448,7 @@
 
 #hand .hand-card-slot-playable::before {
   content: "";
-  border-radius: 0.6rem;
+  border-radius: 0.5rem;
   /* border-top-left-radius: 0.5rem;
   border-bottom-left-radius: 0.5rem; */
   position: absolute;
@@ -462,10 +462,12 @@
 }
 
 @keyframes beating-border {
-  0% {}
+  0% {
+    /* border-radius: 0.3rem; */
+  }
   30% {
-    /* border-radius: 0.5rem; */
     background: linear-gradient(0deg, rgba(255, 162, 0, 0.8), rgba(255, 200, 0, 0.8));
+    /* border-radius: 0.5rem; */
     height: calc(100% + 0.4rem);
     width: calc(100% + 0.4rem);  /* + 1px); */
     top: -0.2rem;

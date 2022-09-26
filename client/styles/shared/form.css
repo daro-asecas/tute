@@ -218,3 +218,62 @@ input[type="checkbox"].toggle:disabled + label::after {
 #expand-match-details-button.expanded {
   transform: rotate(180);
 }
+
+
+.prompt {
+  z-index: 20;
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(50,50,50,0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.prompt-form {
+  background: var(--bkg-color);
+  padding: 4rem;
+  border: 1px solid var(--border-color);
+  color: white;
+  font-weight: bold;
+  border-radius: 0.3rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+#user-name-form {
+  width: 19.2rem;
+  height: 5rem;
+}
+
+.prompt-form > * {
+  flex-basis: 1;
+  flex-grow: 1;
+  height: 2rem;
+}
+
+.prompt-button-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  gap: 0.5rem;
+}
+
+.prompt-button-wrapper > * {
+  flex-basis: 0;
+  flex-grow: 1;
+  height: 2rem;
+}
+
+.prompt-button-wrapper > .close-prompt-button {
+  background-color: gray;
+}
+
+.prompt-button-wrapper > .close-prompt-button:hover {
+  background-color: lightgray;
+}

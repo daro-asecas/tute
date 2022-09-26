@@ -18,12 +18,36 @@
   <link rel="icon" type="image/x-icon" href="../img/favicon/favicon.ico">
 </head>
 <body>
-  <div id="match-wrapper">
+  <div id="user-name-prompt" class="prompt hidden">
+    <form id="user-name-form" class="prompt-form">
+      <label for="user-name">Please type your name</label>
+      <input id="user-name" autocomplete="off" placeholder="Your name" title="user-name" />
+      <button id="submit-name">&gt;&gt;</button>
+    </form>
+  </div>
 
+  <div id="add-bot-prompt" class="prompt hidden">
+    <form id="add-bot-form" class="prompt-form">
+      <div class="prompt-text">You need at least 3 players. Wanna add <span id="add-x-bots"></span>?</div>
+      <div class="prompt-button-wrapper">
+        <button class="close-prompt-button">Cancel</button>
+        <button id="add-bots-and-start-game">OK!</button>
+      </div>
+    </form>
+  </div>
+
+  <div id="max-player-exceeded-prompt" class="prompt hidden">
+    <form id="max-player-exceeded-form" class="prompt-form">
+      <div class="prompt-text">Maximum number of players allowed is 5! Someone has to leave.</div>
+      <button class="close-prompt-button">OK!</button>
+    </form>
+  </div>
+
+
+  <div id="match-wrapper">
     
     <div id="settings-wrapper">
       <div id="settings-wrapper-except-startbutton">
-
         <div id="players-wrapper">
           <h2>Players</h2>
           <a id="invite-btn" class="button" data-action="share/whatsapp/share" target="_blank">WhatsApp Invite</a>
@@ -127,6 +151,8 @@
         </div>
 
       </div>
+      <button id="start-game-button" class="hidden"></button>
+      <!-- alert="3 to 5 players needed" -->
     </div>
 
     <div id="game-wrapper" class="hidden">
@@ -191,7 +217,7 @@
 
           <form id="chat-form">
             <input id="msg" autocomplete="off" placeholder="Type a message" title="msg" />
-            <button id="send">Send</button>
+            <button id="send">&gt;&gt;</button>
           </form>
         </div>
     </div>
