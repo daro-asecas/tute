@@ -62,6 +62,10 @@ class Match {
   get areAllBots() {
     return (this.numberOfHumanPlayers === 1)
   }
+
+  get hostIndexInHumanPlayers() {
+    return (this.humanPlayers.indexOf(this.host))
+  }
   
   sendToOnePlayer(playerIndex, msg) {
     this.players[playerIndex].emit("gameMessage", msg);
@@ -103,6 +107,7 @@ class Match {
     this.host.on("updateBotCount", (number) => { this.updateBotCountFromHost(number) })
     this.host.on("updateSettingsFromHost", (key, value) => { this.updateSettingsFromHost(key, value) })
     this.host.on("changeInPlayersList", () => { this.changeInPlayersList() })
+    this.host.on("removePlayer", (index) => { this.removePlayer(index) })
     this.host.on("startGameRequest", () => { this.processStartGameRequest() })
     this.host.on("forceStartGame", () => { this.forceStartGame() })
     this.host.on("nextRound", () => { this.startGame() })
@@ -113,7 +118,7 @@ class Match {
   };
 
   updateSettingsScreen() {
-    this.emitEventToAllPlayers("updatePlayerList", this.humanPlayerNames)
+    this.emitEventToAllPlayers("updatePlayerList", this.humanPlayerNames, this.hostIndexInHumanPlayers)
     this.emitEventToAllPlayers("updateAllSettingsFromServer", this.settings)
     this.emitEventToAllPlayers("updateBotCountFromServer", this.botNum)
     // this.emitEventToAllPlayersButHost("updateAllSettingsFromServer", this.settings)
@@ -130,6 +135,14 @@ class Match {
   updateSettingsFromHost(key, value) {
     this.settings[key] = value
     this.emitEventToAllPlayersButHost("updateSingleSettingFromServer", key, value)
+  }
+
+  removePlayer(index) {
+    this.humanPlayers[index].emit("error", "kickedOut")
+
+    this.humanPlayers.splice(index, 1)
+    this.humanPlayersId.splice(index, 1)
+    this.emitEventToAllPlayers("updatePlayerList", this.humanPlayerNames, this.hostIndexInHumanPlayers)
   }
 
 
@@ -186,7 +199,7 @@ class Match {
         this.host.emit("message", "You are host", "server")
         this.host.to(this.room).emit("message", [`${this.humanPlayerNames[0]} is host now`, "server"])
       }
-      this.emitEventToAllPlayers("updatePlayerList", this.humanPlayerNames)
+      this.emitEventToAllPlayers("updatePlayerList", this.humanPlayerNames, this.hostIndexInHumanPlayers)
       // this.host.emit("updateMatchStartButton", this.isAllowedMatchStart)
     }
   }

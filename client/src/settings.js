@@ -33,15 +33,31 @@ const addEventListener = ((settings) => {
   })
 })
 
-const createPlayerLi = (name => {
+const createPlayerLi = ((name, index, isHost) => {
   const li = document.createElement("li")
-  li.innerText = name
+  li.setAttribute("id", `player-${index}-li`)
+  const div = document.createElement("div")
+  div.innerText = name
+  div.classList.add("player-name")
   playerList.appendChild(li)
+  li.appendChild(div)
+  if (imHost && !isHost) {
+    const removeButton = document.createElement("span")
+    removeButton.innerText = 	"\u274C";
+    removeButton.classList.add("remove-player-button")
+    li.appendChild(removeButton)
+    removeButton.addEventListener("click", () => { sock.emit("removePlayer", index) })
+  }
 })
 
-const updatePlayerList = (playerNames) => {
+const updatePlayerList = (playerNames, hostIndex) => {
   playerList.innerHTML = ""
-  playerNames.forEach(name => { if (!!name) {createPlayerLi(name)} })  
+  playerNames.forEach((name, index) => {
+    if (!name) {showName = "Unnamed"}
+    else {showName = name}
+    let isHost = (index===hostIndex)
+    createPlayerLi(showName, index, isHost)
+  })
 }
 sock.on("updatePlayerList", updatePlayerList)
 
@@ -139,6 +155,9 @@ const error = ((error) => {
       break
     case "openInOtherTab":
       window.location.replace(`../index.html?error=openInOtherTab`);  
+      break
+    case "kickedOut":
+      window.location.replace(`../index.html?error=kickedOut`);  
       break
     default:
       sock.emit("serverConsoleLog", "Error parameter unknown")

@@ -247,9 +247,41 @@ input[type="checkbox"].toggle:disabled + label::after {
 }
 
 #user-name-form {
-  width: 19.2rem;
+  width: max-content;
   height: 5rem;
+  gap: 0.8rem;
 }
+
+#user-name-form > div {
+  height: min-content;
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#user-name-form > div > * {
+  height: 100%;
+}
+#user-name-form > div > input {
+  width: 1rem;
+  flex-grow: 1;
+  border: 0;
+  border-radius: 0.1rem;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+}
+
+#user-name-form > div > button {
+  width: 2rem;
+  padding: 0 0.4rem 0rem;
+  font-weight: bold;
+  border-radius: 0.1rem;
+  border-top-left-radius: 0;
+  border-bottom-left-radius: 0;
+}
+
+
 
 .prompt-form > * {
   flex-basis: 1;

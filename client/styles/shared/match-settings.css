@@ -66,6 +66,11 @@
   gap: 0.3rem;
 }
 
+.player-name {
+  margin: 0 auto;
+}
+
+
 #settings-wrapper ul {
   padding-inline-start: 0px;
   margin-bottom: 0.2rem;

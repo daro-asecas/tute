@@ -43,6 +43,9 @@ const showError = ((error) => {
       case "spectatorsNotAllowed":
         msg = "This game does not allow spectators"
         break
+      case "kickedOut":
+        msg = "You have been kicked out"
+        break
     default:
       sock.emit("serverConsoleLog", "Error parameter unknown")
   }
