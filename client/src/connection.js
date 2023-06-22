@@ -1,21 +1,19 @@
 // Rebusque para que funcione localmente y onlinemente sin modificar los archivos
-const server = typeof(serverURL)!="undefined"?serverURL:"http://localhost:5000";  // esto es porque en NETLIFY hay un SnippetInjection de esta variable!!
+const server = typeof(serverURL)!="undefined"?serverURL:"http://localhost:5000";  // NETLIFY hace un SnippetInjection de esta variable
 const sock = io(server);
 
 // Rebusque para que no crashee en celulares cuando queda inactiva la conexion
 let connection = 0
 sock.on("handshake", () => {
   console.log("llega el handshake")
-  console.log("emitiendo returnHandshake")
   sock.emit("returnHandshake", connection)
+  console.log("se emitió returnHandshake")
   connection ++
   const match = new URLSearchParams(window.location.search).get("match");
   if (match) {
-    console.log("emitiendo joinGame")
     sock.emit("joinGame", match, localStorage.userId)
+    console.log("se emitió joinGame")
   }
-
-
 })
 
 // document.addEventListener('DOMContentLoaded', (event) => {

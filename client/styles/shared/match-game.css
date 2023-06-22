@@ -73,8 +73,12 @@
   z-index: 6;
 }
 
-.game-button-play {
-  padding: 1rem;
+.game-button-play, .game-button-autoplay {
+  height: 3rem;
+  width: 3rem;
+  text-align: center;
+  vertical-align: middle;
+  padding-top: 0.8445rem;
 }
 
 .game-button:hover {
@@ -93,6 +97,15 @@
 
 .game-button-active {
   display: unset;
+}
+
+.game-button-checked .game-button-autoplay {
+  transform: scale(0.97, 0.97);
+  background-color: var(--form-btn-hover-color);
+}
+
+.game-button-checked .game-button-border::before {
+  display: none;
 }
 
 .game-button-border::before {

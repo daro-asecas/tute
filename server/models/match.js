@@ -71,13 +71,13 @@ class Match {
     this.players[playerIndex].emit("gameMessage", msg);
   };
   
-  sendToAllPlayers(messages) {
+  sendMessageToAllPlayers(messages) {
     this.players.forEach((player, index) => {
       player.emit("gameMessage", messages[index] || messages)
     });
   };
 
-  sendToAllPlayersButHost(messages) {
+  sendMessageToAllPlayersButHost(messages) {
     const playersArray = (this.isGameStarted)?this.players:this.humanPlayers
     playersArray.forEach((player, index) => {
       if(this.host != player) {
@@ -111,7 +111,6 @@ class Match {
     this.host.on("startGameRequest", () => { this.processStartGameRequest() })
     this.host.on("forceStartGame", () => { this.forceStartGame() })
     this.host.on("nextRound", () => { this.startGame() })
-    // this.host.on("nextRound", this.startGame)           // no se por que no funcionaron asi
 
 
 
@@ -358,7 +357,7 @@ class Match {
     const playableCards = rules.playableCards(hands[nextPlayer], trickData)
     if(this.areAllBots && this.players[nextPlayer] instanceof Bot) {
       let isListenerActive = true
-      this.host.emit("activatePlayButton")
+      this.host.emit("botTurn")
       this.host.on("nextTurn", () => {
           if (isListenerActive) {
             isListenerActive = false
@@ -377,8 +376,8 @@ class Match {
 
   trickResult() {
     let winnerName = this.playerNames[winner]
-    messages = [`${winnerName} won`]
-    this.sendToAllPlayers(messages)
+    // messages = [`${winnerName} won`]
+    // this.sendMessageToAllPlayers(messages)
     this.nextTrick(winnerName)
   }
 
@@ -396,7 +395,8 @@ class Match {
       this.emitNextTurnData()
     } else {
       piles[winner].extras.lastRound = 10
-      this.endRound()
+
+      setTimeout(()=>{this.endRound()}, 300)
     }
   }
 

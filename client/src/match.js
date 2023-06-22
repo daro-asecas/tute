@@ -8,6 +8,7 @@ const avatars = []
 const counts = []
 const gameButtons = {
   play: document.getElementById("btn-play"),
+  autoplay: document.getElementById("btn-autoplay"),
   chants: {
     oro: document.getElementById("btn-chant-oro"),
     copa: document.getElementById("btn-chant-copa"),
@@ -18,6 +19,18 @@ const gameButtons = {
 let myNumber, totalPlayers, playerNames, areAllBots, firstBotMove, triumphSuit
 let firstRound =  true
 let botTurnListener = false
+let isAutoplayActivated = false
+
+gameButtons.autoplay.addEventListener("click", () => {
+  isAutoplayActivated = !isAutoplayActivated
+  if (isAutoplayActivated) {
+    sock.emit("nextTurn")
+    gameButtons.autoplay.classList.add("game-button-checked")
+    gameButtons.play.classList.remove("game-button-active")
+  } else {
+    gameButtons.autoplay.classList.remove("game-button-checked")
+  }
+})
 
 const gameWrapper = document.querySelector("#game-wrapper");
 const resultWrapper = document.querySelector("#result-wrapper");
@@ -220,7 +233,6 @@ sock.on("renderGame", renderGame)
 
 const flip = (card, player) => {
   if (firstBotMove) {
-    // gameMessage(`You are against bots. Click to make them play`) 
     firstBotMove = false
   } else {
     gameMessage("")
@@ -231,8 +243,36 @@ const flip = (card, player) => {
 sock.on("flip", flip)
 
 function winnerCollects(winner) {
-  gameMessage("")
-  forEachPlayer((i)=>{playersCardSlots[i].innerHTML = ""})
+  //  ("")
+
+  forEachPlayer((i)=>{
+    const card = document.querySelector(`#player${i}-card-slot>.card`)
+    const angle = 360* (winner - i) / totalPlayers
+    const coordX = - 0 + 11 * Math.cos((90-angle)*(Math.PI / 180))
+    const coordY = - 7 + 11 * Math.sin((90-angle)*(Math.PI / 180))
+
+    let frame = 1;
+    let id
+    clearInterval(id);
+    id = setInterval(renderFrame, 15);
+    function renderFrame() {
+      if (frame <= 10) {
+        card.style.transform = `translate(${coordX*(frame/10)}rem, ${coordY*(frame/10)}rem) rotate(${720*(frame/10)}deg)`
+        frame += 1
+      } else {
+        clearInterval(id)
+        card.style.transform = ``
+        playersCardSlots[i].innerHTML = ""
+      }
+    }
+  })
+
+
+
+
+
+
+
   renderPile(playersPiles[winner])
 }
 sock.on("winnerCollects", winnerCollects)
@@ -286,12 +326,14 @@ function deal(myNum, totPlayers, names, hand, triumphSuitParameter, startingPlay
           }
         } else { firstBotMove = false }
   }
-  forEachPlayer((i)=>{playersPiles[i].classList.add("empty-pile")})
+  forEachPlayer((i)=>{
+    playersPiles[i].classList.add("empty-pile")
+    playersChants[i].innerHTML = ""
+  })
   renderHand(hand)
   triumphSuit = triumphSuitParameter
   triumphSuitSymbol.src =`../img/${triumphSuit}.png`
   if (startingPlayer != myNum && firstBotMove) {
-    // gameMessage(`You are against bots. Click to make them play`)
     firstBotMove = false
   }
   pointsForChant()
@@ -299,10 +341,15 @@ function deal(myNum, totPlayers, names, hand, triumphSuitParameter, startingPlay
 sock.on("deal", deal)
 
 
-function activatePlayButton() {
+function botTurn() {
+  if (isAutoplayActivated) {
+    sock.emit("nextTurn")
+  } else {
     gameButtons.play.classList.add("game-button-active")
+    gameButtons.autoplay.classList.add("game-button-active")
+  }
 }
-sock.on("activatePlayButton", activatePlayButton)
+sock.on("botTurn", botTurn)
 
 const setResultWrapper = () => {
   forEachPlayer((i) => {
@@ -345,7 +392,6 @@ const nextRoundButton = (() => {
   nextRoundBtn.setAttribute("id", "next-round-button")
   nextRoundBtn.classList.add("button")
   resultWrapper.appendChild(nextRoundBtn)
-  console.log("ud esta aqui")
   document.getElementById("next-round-button").addEventListener("click", () => {sock.emit("nextRound")})
 })
 
@@ -398,7 +444,7 @@ function pointsForChant () {
   gameButtons.chants.copa.setAttribute("points", "+20")
   gameButtons.chants.espada.setAttribute("points", "+20")
   gameButtons.chants.basto.setAttribute("points", "+20")
-  gameButtons.chants[triumphSuit].setAttribute("points", "+40")
+  gameButtons.chants[triumphSuit].setAttribute("points", "+40") // sobreescribe
 }
 
 function disableAllChantButtons() {

@@ -3,8 +3,6 @@ This repository deploys automatically:
   Client (enter here to play the game):
   https://tute-online.netlify.app/
 
-  Server:
-  https://tute-online.herokuapp.com/
 
 
 <-------------------------------->
