@@ -1,5 +1,3 @@
-server/node_modules
+./server/node_modules
 
-server/.env
-
-0000 experimentos
+./server/.env

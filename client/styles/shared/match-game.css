@@ -104,7 +104,7 @@
   background-color: var(--form-btn-hover-color);
 }
 
-.game-button-checked .game-button-border::before {
+.game-button-border.unactive {
   display: none;
 }
 
@@ -493,7 +493,8 @@
     top: -0.2rem;
     left: calc(-0.2rem - 1px);
   } */
-  100% {}
+  97% {}
+  100% {background: transparent;}
 }
 
 

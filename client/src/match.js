@@ -27,8 +27,10 @@ gameButtons.autoplay.addEventListener("click", () => {
     sock.emit("nextTurn")
     gameButtons.autoplay.classList.add("game-button-checked")
     gameButtons.play.classList.remove("game-button-active")
+    document.querySelector("#game-button-container .game-button-border").classList.add("unactive")
   } else {
     gameButtons.autoplay.classList.remove("game-button-checked")
+    document.querySelector("#game-button-container .game-button-border").classList.remove("unactive")
   }
 })
 
